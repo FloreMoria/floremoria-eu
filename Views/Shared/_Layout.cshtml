@@ -5,8 +5,27 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <title>@ViewBag.Title - FloreMoria</title>
-    <script type="importmap"></script>
+    <meta name="description" content="@ViewBag.Description ?? 'Fiori freschi sulle tombe in tutta Italia. Ordina online con foto della consegna. Servizio professionale e rispettoso. FloreMoria, il modo più gentile per ricordare.'" />
+    <meta name="keywords" content="fiori cimitero, consegna fiori tombe, commemorazione defunti, FloreMoria, fiorista cimitero, tomba fiorita, servizio fiori online, addobbi funebri, camera ardente" />
+    <meta name="author" content="FloreMoria S.r.l." />
+    <link rel="canonical" href="https://www.floremoria.eu" />
+
+    <!-- Open Graph (Facebook/LinkedIn) -->
+    <meta property="og:title" content="@ViewBag.Title - FloreMoria" />
+    <meta property="og:description" content="Fiori freschi sulle tombe in tutta Italia. Ordina online con foto della consegna." />
+    <meta property="og:image" content="https://www.floremoria.eu/content/img/logo.png" />
+    <meta property="og:url" content="https://www.floremoria.eu" />
+    <meta property="og:type" content="website" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="@ViewBag.Title - FloreMoria" />
+    <meta name="twitter:description" content="Servizio di consegna fiori sulle tombe con foto. FloreMoria è il modo più gentile per ricordare." />
+    <meta name="twitter:image" content="https://www.floremoria.eu/content/img/logo.png" />
+
+    <!-- Import CSS -->
     <link rel="stylesheet" href="~/Content/slick.css">
     <link rel="stylesheet" href="~/Content/slick-theme.css">
     <link rel="stylesheet" href="~/Content/magnific-popup.css">
@@ -19,7 +38,12 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
     <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <!-- JS -->
     <script src="~/Scripts/tailwind.js"></script>
+
+    <!-- Google Translate -->
     <script type="text/javascript">
         function googleTranslateElementInit() {
             new google.translate.TranslateElement({
@@ -29,18 +53,18 @@
             }, 'google_translate_element');
         }
     </script>
-    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-    <!-- Google tag (gtag.js) -->
+    <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+    <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-K00DQKQXFC"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
         function gtag() { dataLayer.push(arguments); }
         gtag('js', new Date());
-
         gtag('config', 'G-K00DQKQXFC');
     </script>
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <!-- OpenReplay Tracking Code -->
+
+    <!-- OpenReplay Tracking -->
     <script>
         var initOpts = {
             projectKey: "IMh7zU7Blecr2ibII8CJ",
@@ -82,33 +106,31 @@
             r.getSessionToken = function () { };
         })("//static.openreplay.com/latest/openreplay.js", 1, 0, initOpts, startOpts);
     </script>
+
+    <!-- Custom Scrollbar and Utility Styles -->
     <style>
         * {
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
-
-            *::-webkit-scrollbar {
-                display: none;
-            }
-
+        *::-webkit-scrollbar {
+            display: none;
+        }
         [x-cloak] {
             display: none !important;
         }
-
         .skiptranslate iframe {
             display: none;
         }
-
         body {
             top: 0 !important;
         }
-
         iframe.adsbox {
             height: 0 !important;
         }
     </style>
 </head>
+
 <body>
     <header>
         <nav class="navbar navbar-expand-md tm-navbar p-4 top-[-2px]" id="tmNav">
