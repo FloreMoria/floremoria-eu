@@ -1,0 +1,313 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+    var promo = ViewBag.Promo as FloreMoria.Models.Prodotto;
+}
+
+<style>
+    .great-vibes {
+    font-family: "Great Vibes", serif;
+    font-weight: 400;
+    font-style: normal;
+    }
+    .navbar-nav .tm-nav-link, .tm-next .navbar-brand {
+    color: white;
+    }
+
+    .review-text:not(.expanded) {
+    max-height: 16.5rem;
+    }
+
+    .review-text.expanded {
+    max-height: none;
+    }
+
+    .review-more {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    }
+</style>
+<body>
+    <!-- Hero section -->
+    <section id="infinite" class="text-white tm-font-big tm-parallax">
+        <div class="text-center tm-hero-text-container">
+            <div class="tm-hero-text-container-inner px-5">
+                <h2 class="tm-hero-title text-[4rem] lg:text-[5rem]">FloreMoria</h2>
+                <p class="tm-hero-subtitle">
+                    I fiori della memoria
+                    <br><span>Consegniamo bouquet di fiori freschi direttamente sulle tombe in tutta Italia</span>
+                    <br><span>e ti inviamo la foto sul tuo WhatsApp.</span>
+                </p>
+            </div>
+        </div>
+
+        <div class="tm-next tm-intro-next">
+            <a href="#whatwedo" class="text-center tm-down-arrow-link">
+                <i class="fas fa-2x fa-arrow-down tm-down-arrow"></i>
+            </a>
+        </div>
+    </section>
+
+    <section id="whatwedo" class="tm-section-pad-top">
+
+        <div class="w-3/4 mx-auto">
+
+            <div class="flex tm-content-box">
+                <!-- first row -->
+                <div class="w-full">
+                    @if(promo != null)
+                    {                        
+                        <div class="mb-20 rounded-md bg-blue-100/50 p-5">
+                            <div class="w-full">
+                                <div class="mb-5 overflow-hidden duration-300 bg-white rounded-lg shadow-md grid grid-cols-1 lg:grid-cols-3">
+                                    <img src="@promo.Immagine" class="max-h-110 w-full"
+                                    alt="image" />
+                                    <div class="p-8 text-center sm:p-9 md:p-7 xl:p-9 lg:col-span-2">
+                                        <h3>
+                                            <a href="javascript:void(0)"
+                                            class="text-dark dark:text-white hover:text-primary mb-4 block text-xl font-semibold sm:text-[22px] md:text-xl lg:text-[22px] xl:text-xl 2xl:text-[22px]">
+                                                @promo.Nome
+                                            </a>
+                                        </h3>
+                                        <p class="text-md leading-relaxed text-body-color dark:text-dark-6 mb-7 text-start">
+                                            @promo.Descrizione
+                                        </p>
+                                        <p class="text-3xl leading-relaxed text-body-color dark:text-dark-6 mb-7 text-end">
+                                            In promo a soli: <span class="italic text-4xl text-[#38679D]">€ @promo.Prezzo</span>
+                                        </p>
+                                        <a href="/Home/Dettaglio/@promo.Id"
+                                        class="inline-block py-2 text-base font-medium transition bg-[#38679D] text-white px-7 ">
+                                            Aggiungi al carrello
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <section class="shadow-md bg-gray-100 px-6 py-3 dark:border-dark-3 dark:bg-dark-2 rounded">
+                                <div class="container">
+                                    <div class="relative pr-6 text-center">
+                                        <span class="inline-flex h-6 items-center justify-center rounded bg-blue-100/50 px-2.5 text-sm font-medium text-primary">
+                                            Offerta
+                                        </span>
+                                        <p class="inline-flex px-3 text-sm font-medium text-dark lg:text-base dark:text-white">
+                                            Valida solo per un periodo limitato!
+                                        </p>
+                                        <a href="/Home/Dettaglio/@promo.Id"
+                                        class="inline-flex items-center gap-2 text-sm font-medium text-[#38679D] lg:text-base">
+                                            Descrizione completa
+                                            <span>
+                                                <svg width="20"
+                                                height="20"
+                                                viewBox="0 0 20 20"
+                                                fill="none"
+                                                xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M18 9.5L11.5312 2.9375C11.25 2.65625 10.8125 2.65625 10.5312 2.9375C10.25 3.21875 10.25 3.65625 10.5312 3.9375L15.7812 9.28125H2.5C2.125 9.28125 1.8125 9.59375 1.8125 9.96875C1.8125 10.3438 2.125 10.6875 2.5 10.6875H15.8437L10.5312 16.0938C10.25 16.375 10.25 16.8125 10.5312 17.0938C10.6562 17.2188 10.8437 17.2812 11.0312 17.2812C11.2187 17.2812 11.4062 17.2188 11.5312 17.0625L18 10.5C18.2812 10.2187 18.2812 9.78125 18 9.5Z"
+                                                    fill="currentColor" />
+                                                </svg>
+                                            </span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                    }
+                    <div class="tm-intro-text-container">
+                        <h2 class="tm-text-primary mb-4 tm-section-title">Come funziona</h2>
+                        <p class="mb-4 tm-intro-text">
+                            Troviamo la tomba dei tuoi cari e 
+                            i nostri fioristi locali consegnano direttamente contribuendo al risparmio di CO2.
+                            <br />Semplice, innovativo ed ecosostenibile.
+                            <br />Perché anche a distanza, il tuo affetto può essere sempre presente.
+                            <br />*<span class="italic text-lg underline">Consegna gratuita per ordini superiori a 20€.</span>
+                        </p>
+                    </div>
+                </div>
+
+            </div><!-- first row -->
+
+            <div class="flex flex-col md:flex-row tm-content-box">
+                <!-- second row -->
+                <div class="w-full md:w-1/5">
+                    <img src="https://img.icons8.com/?size=80&id=23039&format=png&color=38679D" alt="Alternate Text" class="mx-auto md:m-0" />
+                </div>
+                <div class="w-full md:w-4/5 text-center md:text-start">
+                    <div class="tm-intro-text-container pl-0 md:pl-4">
+                        <h2 class="tm-text-primary mb-4 text-3xl">Step 1</h2>
+                        <p class="mb-4 tm-intro-text">
+                            Scegli i fiori
+                        </p>
+                    </div>
+                </div>
+
+                <div class="w-full md:w-1/5 pt-[60px] lg:pt-0">
+                    <img src="https://img.icons8.com/?size=70&id=53383&format=png&color=38679D" alt="Alternate Text" class="mx-auto md:m-0" />
+                </div>
+                <div class="w-full md:w-4/5 text-center md:text-start">
+                    <div class="tm-intro-text-container pl-0 md:pl-4">
+                        <h2 class="tm-text-primary mb-4 text-3xl">Step 2</h2>
+                        <p class="mb-4 tm-intro-text">
+                            Scrivi il nome e il comune di sepoltura
+                        </p>
+                    </div>
+                </div>
+
+            </div><!-- second row -->
+
+            <div class="flex flex-col md:flex-row tm-content-box">
+                <!-- third row -->
+                <div class="w-full md:w-1/5">
+                    <img src="https://img.icons8.com/?size=70&id=VeUo27LTyt8A&format=png&color=38679D" alt="Alternate Text" class="mx-auto md:m-0" />
+                </div>
+                <div class="w-full md:w-4/5 text-center md:text-start">
+                    <div class="tm-intro-text-container pl-0 md:pl-4">
+                        <h2 class="tm-text-primary mb-4 text-3xl">Step 3</h2>
+                        <p class="mb-4 tm-intro-text">
+                            Completa l'ordine
+                        </p>
+                    </div>
+                </div>
+
+                <div class="w-full md:w-1/5 pt-[60px] lg:pt-0">
+                    <img src="https://img.icons8.com/?size=80&id=IDJ9e5hynIk8&format=png&color=38679D" alt="Alternate Text" class="mx-auto md:m-0" />
+                </div>
+                <div class="w-full md:w-4/5 text-center md:text-start">
+                    <div class="tm-intro-text-container pl-0 md:pl-4">
+                        <h2 class="tm-text-primary mb-4 text-3xl">Step 4</h2>
+                        <p class="mb-4 tm-intro-text">
+                            Procediamo alla consegna
+                        </p>
+
+                        <div class="tm-continue md:justify-self-end mt-20 md:mt-0">
+                            <a href="/Home/Prodotti?section=0" class="tm-intro-text tm-btn-primary great-vibes font-bold text-3xl">Scegli i tuoi fiori <i class="fas fa-arrow-right ms-3 align-middle text-xl"></i></a>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- third row -->
+
+        </div>
+
+    </section>
+
+    <section id="testimonials" class="tm-section-pad-top tm-parallax-2">
+        <div class="w-3/4 mx-auto tm-testimonials-content">
+            <div class="flex">
+                <div class="w-full tm-content-box">
+                    <h2 class="text-white text-center mb-4 tm-section-title">Recensioni</h2>
+                    <p class="mx-auto tm-section-desc text-center">
+                        La voce dei nostri clienti: testimonianze di cura, affidabilità e dedizione che guidano il nostro servizio ogni giorno.
+                    </p>
+                    <div class="mx-auto tm-gallery-container tm-gallery-container-2" data-aos="fade-up" data-aos-duration="1000">
+                        <div class="tm-testimonials-carousel">
+                            @foreach (var review in ViewBag.Reviews)
+                            {
+                                <figure class="tm-testimonial-item bg-gray-700/75 rounded-md p-5">
+                                    <img src="@(review.ProfilePhotoUrl ?? "img/testimonial-img-01.jpg")"
+                                    alt="@review.AuthorName"
+                                    class="img-fluid mx-auto">
+                                    <div class="flex items-center mb-3">
+                                        @{
+                                            int fullStars = (int)review.Rating;
+                                            bool hasHalfStar = (review.Rating % 1) >= 0.5;
+                                            int emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+                                        }
+
+                                        @for (int i = 0; i < fullStars; i++)
+                                        {
+                                            <i class="fas fa-star text-yellow-400 text-base"></i>
+                                        }
+
+                                        @if (hasHalfStar)
+                                        {
+                                            <i class="fas fa-star-half-alt text-yellow-400 text-base"></i>
+                                        }
+
+                                        @for (int i = 0; i < emptyStars; i++)
+                                        {
+                                            <i class="far fa-star text-yellow-400 text-base"></i>
+                                        }
+
+                                        <span class="ml-2 text-white/30 text-base">(@review.Rating.ToString("0.0"))</span>
+                                    </div>
+
+                                    <blockquote class="review-text relative max-h-24 overflow-hidden transition-all duration-300">
+                                        <span class="inline">@review.Text</span>
+                                        @if (review.Text.Length > 300)
+                                        {
+                                            <button class="review-more bg-[#38679D] text-white hover:bg-[#38679D]/80 cursor-pointer px-1 rounded-full">...altro</button>
+                                        }
+                                    </blockquote>
+
+                                    <figcaption class="mt-4">@review.AuthorName</figcaption>
+                                </figure>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="tm-bg-overlay"></div>
+    </section>
+
+    <section id="gallery" class="tm-section-pad-top">
+        <div class="w-3/4 mx-auto tm-container-gallery">
+            <div class="flex">
+                <div class="text-center w-full">
+                    <h2 class="tm-text-primary tm-section-title mb-4">Prodotti</h2>
+                    <p class="mx-auto tm-section-desc">
+                        Scopri i nostri bouquet, selezionati con cura per rendere omaggio ai tuoi cari. Puoi optare per la consegna singola o approfittare dei nostri carnet e abbonamenti. Al termine della consegna ti invieremo una foto come conferma direttamente sul tuo numero WhatsApp.
+                    </p>
+                </div>
+            </div>
+            <div class="flex">
+                <div class="w-full">
+                    <div class="mx-auto tm-gallery-container">
+                        <div class="grid tm-gallery">
+                            <a href="/Home/Prodotti?section=0">
+                                <figure class="effect-honey tm-gallery-item">
+                                    <img src="https://images.unsplash.com/photo-1622658641558-235f26dd270b?q=80&w=2574&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Image 1" class="img-fluid">
+                                    <figcaption>
+                                        <h2><i><span>Bouquet</span></i></h2>
+                                    </figcaption>
+                                </figure>
+                            </a>
+                            <a href="/Home/Prodotti?section=1">
+                                <figure class="effect-honey tm-gallery-item">
+                                    <img src="https://images.unsplash.com/photo-1487530903081-59e0e3331512?q=80&w=2574&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Image 2" class="img-fluid">
+                                    <figcaption>
+                                        <h2><i><span>Carnet</span></i></h2>
+                                    </figcaption>
+                                </figure>
+                            </a>
+                            <a href="/Home/Prodotti?section=2">
+                                <figure class="effect-honey tm-gallery-item">
+                                    <img src="https://images.unsplash.com/photo-1580227974546-fbd48825d991?q=80&w=2574&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Image 3" class="img-fluid">
+                                    <figcaption>
+                                        <h2><i><span>Abbonamenti</span></i></h2>
+                                    </figcaption>
+                                </figure>
+                            </a>
+                            <a href="/Home/Prodotti?section=3">
+                                <figure class="effect-honey tm-gallery-item">
+                                    <img src="https://images.unsplash.com/photo-1711705067509-5cff6bfa058d?q=80&w=2574&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Image 5" class="img-fluid">
+                                    <figcaption>
+                                        <h2><i><span>Lutto e Camera ardente</span></i></h2>
+                                    </figcaption>
+                                </figure>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+
+<script defer>
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('review-more')) {
+            const blockquote = e.target.closest('.review-text');
+            blockquote.classList.toggle('expanded');
+            e.target.textContent = blockquote.classList.contains('expanded') ? '...meno' : '...altro';
+        }
+    });
+</script>

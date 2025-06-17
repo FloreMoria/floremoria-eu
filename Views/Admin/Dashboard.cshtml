@@ -1,0 +1,35 @@
+﻿@model IEnumerable<FloreMoria.Models.Ordine>
+
+@{
+    ViewBag.Title = "Dashboard";
+    var prodotti = ViewBag.Prodotti as List<FloreMoria.Models.Prodotto>;
+}
+
+<style>
+    .great-vibes {
+        font-family: "Great Vibes", serif;
+        font-weight: 400;
+        font-style: normal;
+    }
+
+    .navbar .navbar-brand,
+    .navbar .nav-link {
+        color: #369;
+    }
+
+        .navbar .nav-link:hover {
+            color: white;
+        }
+
+    input::placeholder, textarea::placeholder {
+        color: gray;
+    }
+
+    [x-cloak] {
+        display: none !important;
+    }
+</style>
+
+<div class="min-h-[85vh] bg-gray-100">
+    @Html.Partial("_Dashboard", Model)
+</div>

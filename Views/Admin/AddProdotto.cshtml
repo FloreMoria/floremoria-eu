@@ -1,0 +1,296 @@
+﻿@model FloreMoria.Models.Prodotto
+@using FloreMoria.Enums
+
+@{
+    ViewBag.Title = "Nuovo Prodotto";
+}
+
+<style>
+    .great-vibes {
+        font-family: "Great Vibes", serif;
+        font-weight: 400;
+        font-style: normal;
+    }
+
+    .navbar .navbar-brand,
+    .navbar .nav-link {
+        color: #369;
+    }
+
+        .navbar .nav-link:hover {
+            color: white;
+        }
+
+    input::placeholder,
+    textarea::placeholder {
+        color: gray;
+    }
+</style>
+
+@using (Html.BeginForm("AddProdotto", "Admin", FormMethod.Post, new { enctype = "multipart/form-data", @class = "w-3/4 mx-auto pt-24 pb-12" }))
+{
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <div class="space-y-12">
+        <div class="border-b border-gray-900/10 pb-12">
+            <h2 class="text-2xl font-semibold text-gray-900">Nuovo prodotto</h2>
+            <p class="mt-1 text-lg text-gray-600">Compila le informazioni per aggiungere un nuovo prodotto al catalogo.</p>
+
+            <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8">
+                <!-- NOME -->
+                <div class="col-span-full">
+                    @Html.LabelFor(m => m.Nome, new { @class = "block text-lg font-medium text-gray-900" })
+                    <div class="mt-2">
+                        <div class="flex items-center rounded-md bg-white pl-3 outline-1 -outline-offset-1 outline-gray-300 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-[#38679D]">
+                            @Html.TextBoxFor(m => m.Nome, new { @class = "block min-w-0 grow py-1.5 pr-3 pl-1 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none sm:text-lg", placeholder = "Nome prodotto", required = "required" })
+                        </div>
+                        @Html.ValidationMessageFor(m => m.Nome, "", new { @class = "text-red-500" })
+                    </div>
+                </div>
+
+                <!-- DESCRIZIONE -->
+                <div class="col-span-full">
+                    @Html.LabelFor(m => m.Descrizione, new { @class = "block text-lg font-medium text-gray-900" })
+                    <div class="mt-2">
+                        @Html.TextAreaFor(m => m.Descrizione, 3, 0, new { @class = "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-[#38679D] sm:text-lg", required = "required" })
+                    </div>
+                    <p class="mt-3 text-lg text-gray-600">Scrivi la descrizione specifica del prodotto.</p>
+                    @Html.ValidationMessageFor(m => m.Descrizione, "", new { @class = "text-red-500" })
+                </div>
+
+                <!-- PREZZO -->
+                <div class="col-span-full">
+                    @Html.LabelFor(m => m.Prezzo, new { @class = "block text-lg font-medium text-gray-900" })
+                    <div class="mt-2">
+                        <div class="flex items-center rounded-md bg-white pl-3 outline-1 -outline-offset-1 outline-gray-300 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-[#38679D]">
+                            @Html.TextBoxFor(m => m.Prezzo, new { @class = "block min-w-0 grow py-1.5 pr-3 pl-1 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none sm:text-lg", placeholder = "Separatore con virgola, es: 15,99", required = "required" })
+                        </div>
+                        @Html.ValidationMessageFor(m => m.Prezzo, "", new { @class = "text-red-500" })
+                    </div>
+                </div>
+
+                <!-- CATEGORIA -->
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-7">
+                    <div class="col-span-2">
+                        @Html.LabelFor(m => m.Categoria, new { @class = "block text-lg font-medium text-gray-900" })
+                        <div class="mt-2">
+                            <div class="flex items-center rounded-md bg-white outline-1 -outline-offset-1 outline-gray-300 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-[#38679D]">
+                                @Html.DropDownListFor(m => m.Categoria,
+                                    new SelectList(Enum.GetValues(typeof(Categoria)).Cast<Categoria>().Select(e => new { Value = (int)e, Text = e.ToString() }), "Value", "Text"),
+                                    "-- Seleziona una categoria --",
+                                    new { @class = "block min-w-0 grow py-[0.5em] pr-3 pl-1 text-base text-gray-900 text-center placeholder:text-gray-400 focus:outline-none sm:text-lg w-full", required = "required" }
+                                )
+                            </div>
+                            @Html.ValidationMessageFor(m => m.Categoria, "", new { @class = "text-red-500" })
+                        </div>
+                    </div>
+
+                    <!-- NUMERO CONSEGNE ABBONAMENTO -->
+                    <div>
+                        @Html.LabelFor(m => m.NumeroConsegneAbbonamento, new { @class = "block text-lg font-medium text-gray-900" })
+                        <div class="mt-2">
+                            <div class="flex items-center rounded-md bg-white outline-1 -outline-offset-1 outline-gray-300 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-[#38679D]">
+                                @Html.TextBoxFor(m => m.NumeroConsegneAbbonamento, new { type = "number", step = "1", min = "0", @class = "block min-w-0 grow py-1.5 pr-3 pl-1 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none sm:text-lg", placeholder = "10" })
+                            </div>
+                            @Html.ValidationMessageFor(m => m.NumeroConsegneAbbonamento, "", new { @class = "text-red-500" })
+                        </div>
+                    </div>
+
+                    <!-- PROMO -->
+                    <div>
+                        @Html.LabelFor(m => m.Promo, new { @class = "block text-lg font-medium text-gray-900" })
+                        <div class="mt-[0.8em]">
+                            <div class="flex items-center">
+                                @Html.CheckBoxFor(m => m.Promo, new { @class = "accent-[#38679D] w-5 h-5" })
+                            </div>
+                            @Html.ValidationMessageFor(m => m.Promo, "", new { @class = "text-red-500" })
+                        </div>
+                    </div>
+
+                    <!-- Attivo -->
+                    <div>
+                        @Html.LabelFor(m => m.Attivo, new { @class = "block text-lg font-medium text-gray-900" })
+                        <div class="mt-[0.8em]">
+                            <div class="flex items-center">
+                                @Html.CheckBoxFor(m => m.Attivo, new { @class = "accent-[#38679D] w-5 h-5" })
+                            </div>
+                            @Html.ValidationMessageFor(m => m.Attivo, "", new { @class = "text-red-500" })
+                        </div>
+                    </div>
+                </div>
+
+                <!-- IMMAGINI -->
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-5">
+                    <!-- Immagine principale -->
+                    <div>
+                        @Html.LabelFor(m => m.Immagine, "Immagine", new { @class = "block text-lg font-medium text-gray-900" })
+                        <div class="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
+                            <div class="text-center">
+                                <!-- SVG e label come nel tuo HTML -->
+                                <div class="image-upload-container mt-4 flex flex-col text-lg text-gray-600">
+                                    <label for="file-upload" class="relative cursor-pointer rounded-md bg-white font-semibold text-[#38679D] focus-within:outline-hidden hover:text-[#38679D]/90">
+                                        <span>Carica un file</span>
+                                    </label>
+                                    <p class="pl-1">o usa il drag and drop</p>
+                                    @Html.TextBoxFor(m => m.Immagine, new { type = "file", id = "file-upload", name = "Immagine", @class = "sr-only", required = "required" })
+                                </div>
+                                <p class="text-xs/5 text-gray-600">PNG, JPG, GIF fino a 5MB</p>
+                            </div>
+                        </div>
+                        @Html.ValidationMessageFor(m => m.Immagine, "", new { @class = "text-red-500" })
+                    </div>
+
+                    <!-- Immagine 1 -->
+                    <div>
+                        @Html.LabelFor(m => m.Immagine1, "Immagine 1 (opzionale)", new { @class = "block text-lg font-medium text-gray-900" })
+                        <div class="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
+                            <div class="text-center">
+                                <div class="image-upload-container mt-4 flex flex-col text-lg text-gray-600">
+                                    <label for="file-upload1" class="relative cursor-pointer rounded-md bg-white font-semibold text-[#38679D] focus-within:outline-hidden hover:text-[#38679D]/90">
+                                        <span>Carica un file</span>
+                                    </label>
+                                    <p class="pl-1">o usa il drag and drop</p>
+                                    @Html.TextBoxFor(m => m.Immagine1, new { type = "file", id = "file-upload1", name = "Immagine1", @class = "sr-only", required = "required" })
+                                </div>
+                                <p class="text-xs/5 text-gray-600">PNG, JPG, GIF fino a 5MB</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Immagine 2 -->
+                    <div>
+                        @Html.LabelFor(m => m.Immagine2, "Immagine 2 (opzionale)", new { @class = "block text-lg font-medium text-gray-900" })
+                        <div class="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
+                            <div class="text-center">
+                                <div class="image-upload-container mt-4 flex flex-col text-lg text-gray-600">
+                                    <label for="file-upload2" class="relative cursor-pointer rounded-md bg-white font-semibold text-[#38679D] focus-within:outline-hidden hover:text-[#38679D]/90">
+                                        <span>Carica un file</span>
+                                    </label>
+                                    <p class="pl-1">o usa il drag and drop</p>
+                                    @Html.TextBoxFor(m => m.Immagine2, new { type = "file", id = "file-upload2", name = "Immagine2", @class = "sr-only", required = "required" })
+                                </div>
+                                <p class="text-xs/5 text-gray-600">PNG, JPG, GIF fino a 5MB</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Immagine 3 -->
+                    <div>
+                        @Html.LabelFor(m => m.Immagine3, "Immagine 3 (opzionale)", new { @class = "block text-lg font-medium text-gray-900" })
+                        <div class="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
+                            <div class="text-center">
+                                <div class="image-upload-container mt-4 flex flex-col text-lg text-gray-600">
+                                    <label for="file-upload3" class="relative cursor-pointer rounded-md bg-white font-semibold text-[#38679D] focus-within:outline-hidden hover:text-[#38679D]/90">
+                                        <span>Carica un file</span>
+                                    </label>
+                                    <p class="pl-1">o usa il drag and drop</p>
+                                    @Html.TextBoxFor(m => m.Immagine3, new { type = "file", id = "file-upload3", name = "Immagine3", @class = "sr-only", required = "required" })
+                                </div>
+                                <p class="text-xs/5 text-gray-600">PNG, JPG, GIF fino a 5MB</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-6 flex items-center justify-end">
+        <button type="submit"
+                class="w-full lg:w-1/8 cursor-pointer rounded-md bg-[#38679D] px-12 py-2 text-sm font-semibold text-white shadow-xs hover:bg-[#38679D]/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#38679D]">
+            Salva
+        </button>
+    </div>
+}
+
+@section Scripts {
+    @{
+        Html.RenderPartial("_ValidationScriptsPartial");
+    }
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const dropZones = document.querySelectorAll('.border-dashed');
+            const fileInputs = [
+                document.getElementById('file-upload'),
+                document.getElementById('file-upload1'),
+                document.getElementById('file-upload2'),
+                document.getElementById('file-upload3')
+            ];
+
+            dropZones.forEach((dropZone, index) => {
+                const fileInput = fileInputs[index];
+
+                if (!fileInput) return;
+
+                const container = dropZone.querySelector('.text-center');
+
+                const textContainer = dropZone.querySelector('.image-upload-container');
+
+                const previewContainer = document.createElement('div');
+                previewContainer.id = `preview-container-${fileInput.id}`;
+                previewContainer.classList.add('preview-container', 'mt-2', 'lg:ml-4', 'lg:mt-0');
+                previewContainer.style.maxWidth = '100px';
+                previewContainer.style.maxHeight = '100px';
+                previewContainer.style.margin = 'auto';
+
+                container.appendChild(previewContainer);
+
+                dropZone.addEventListener('dragover', function (event) {
+                    event.preventDefault();
+                    dropZone.classList.add('bg-gray-200');
+                });
+
+                dropZone.addEventListener('dragleave', function () {
+                    dropZone.classList.remove('bg-gray-200');
+                });
+
+                dropZone.addEventListener('drop', function (event) {
+                    event.preventDefault();
+                    dropZone.classList.remove('bg-gray-200');
+
+                    const files = event.dataTransfer.files;
+
+                    if (files.length > 0) {
+                        fileInput.files = files;
+                        const file = files[0];
+                        showThumbnail(file, previewContainer);
+                    }
+                });
+
+                fileInput.addEventListener('change', function (event) {
+                    const files = event.target.files;
+
+                    if (files && files.length > 0) {
+                        const file = files[0];
+                        showThumbnail(file, previewContainer);
+                    }
+                });
+
+                const label = textContainer.querySelector('label');
+                if (label) {
+                    label.addEventListener('click', function (event) {
+                        event.preventDefault();
+                        fileInput.click();
+                    });
+                }
+            });
+
+            function showThumbnail(file, container) {
+                container.innerHTML = '';
+
+                const img = document.createElement('img');
+                img.classList.add('thumbnail', 'rounded-md', 'mt-2');
+                img.style.maxWidth = '100px';
+                img.style.maxHeight = '100px';
+
+                const reader = new FileReader();
+
+                reader.onload = function (e) {
+                    img.src = e.target.result;
+                    container.appendChild(img);
+                };
+
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+}

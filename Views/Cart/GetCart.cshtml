@@ -1,0 +1,559 @@
+﻿@model FloreMoria.Dto.ApplicationUserDto
+@using FloreMoria.Enums
+
+@{
+    ViewBag.Title = "Carrello";
+    var ordine = ViewBag.Prodotti as FloreMoria.Dto.OrdineDto;
+}
+
+<style>
+    .great-vibes {
+        font-family: "Great Vibes", serif;
+        font-weight: 400;
+        font-style: normal;
+    }
+
+    .navbar .navbar-brand,
+    .navbar .nav-link {
+        color: #369;
+    }
+
+        .navbar .nav-link:hover {
+            color: white;
+        }
+
+    input::placeholder, textarea::placeholder {
+        color: gray;
+    }
+
+    .payment-checkbox:checked + span {
+        display: block;
+    }
+</style>
+
+<div class="relative w-[90vw] lg:3/4 mx-auto pt-24">
+    <div>
+        <h1 class="text-3xl font-semibold">Carrello</h1>
+        <h3 class="text-2xl">Questo è il riepilogo degli articoli selezionati.</h3>
+    </div>
+    <section class="grid grid-cols-1 2xl:grid-cols-3 gap-7 py-12">
+        <div class="lg:col-span-2 rounded-lg shadow-md p-5 space-y-5 bg-white">
+            <form id="checkoutForm" autocomplete="off">
+                @if (ordine != null && ordine.SelectedProducts.Any(x => x.Categoria == 2))
+                {
+                    <h2 class="text-2xl font-bold mb-7">Tipo di pagamento</h2>
+                    <h3 class="text-lg font-bold mb-7">Sconto applicato in caso di pagamento in soluzione unica.</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-7">
+                        <label for="rate" class="relative flex flex-col bg-white p-5 rounded-lg shadow-md cursor-pointer">
+                            <span>Pagamento rateale</span>
+                            <input type="radio" name="pagamento" id="rate" class="absolute h-0 w-0 appearance-none payment-checkbox" />
+                            <span aria-hidden="true" class="hidden absolute inset-0 border-2 border-[#38679D] rounded-lg">
+                                <span class="absolute top-1/2 -translate-y-1/2 right-4 h-6 w-6 inline-flex items-center justify-center rounded-full bg-[#38679D]/90">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5 text-white">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                    </svg>
+                                </span>
+                            </span>
+                        </label>
+                        <label for="unica" class="relative flex flex-col bg-white p-5 rounded-lg shadow-md cursor-pointer">
+                            <span>Soluzione unica</span>
+                            <input type="radio" name="pagamento" id="unica" class="absolute h-0 w-0 appearance-none payment-checkbox" />
+                            <span aria-hidden="true" class="hidden absolute inset-0 border-2 border-[#38679D] rounded-lg">
+                                <span class="absolute top-1/2 -translate-y-1/2 right-4 h-6 w-6 inline-flex items-center justify-center rounded-full bg-[#38679D]/90">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5 text-white">
+                                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                    </svg>
+                                </span>
+                            </span>
+                        </label>
+                    </div>
+                }
+                <h2 class="text-2xl font-bold mb-7">Compila questi campi per la fatturazione</h2>
+                <h3 class="text-xl font-bold mb-7">Dati personali</h3>
+                <div class="mb-6 flex gap-5">
+                    <label>
+                        <input type="radio" name="tipoCliente" value="privato" checked id="radioPrivato" /> Privato
+                    </label>
+                    <label>
+                        <input type="radio" name="tipoCliente" value="azienda" id="radioAzienda" /> Azienda
+                    </label>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-7 mb-7 privato">
+                    <div>
+                        @Html.TextBoxFor(m => m.Nome, new
+                        {
+                            @class = "border-stroke dark:border-dark-3 dark:text-dark-6 dark:bg-dark text-body-color focus:border-primary w-full rounded border py-3 px-[14px] text-base outline-none",
+                            placeholder = "Nome",
+                            id = "Nome",
+                            name = "Nome"
+                        })
+                    </div>
+                    <div>
+                        @Html.TextBoxFor(m => m.Cognome, new
+                        {
+                            @class = "border-stroke dark:border-dark-3 dark:text-dark-6 dark:bg-dark text-body-color focus:border-primary w-full rounded border py-3 px-[14px] text-base outline-none",
+                            placeholder = "Cognome",
+                            id = "Cognome",
+                            name = "Cognome"
+                        })
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-7 mb-7 privato">
+                    <div>
+                        @Html.TextBoxFor(m => m.CodiceFiscale, new
+                        {
+                            @class = "border-stroke dark:border-dark-3 dark:text-dark-6 dark:bg-dark text-body-color focus:border-primary w-full rounded border py-3 px-[14px] text-base outline-none",
+                            placeholder = "C.F. (opzionale)",
+                            id = "CodiceFiscale",
+                            name = "CodiceFiscale"
+                        })
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-7 mb-7 azienda">
+                    <div>
+                        @Html.TextBoxFor(m => m.RagioneSociale, new
+                        {
+                            @class = "border-stroke dark:border-dark-3 dark:text-dark-6 dark:bg-dark text-body-color focus:border-primary w-full rounded border py-3 px-[14px] text-base outline-none",
+                            placeholder = "Rag. Sociale",
+                            id = "RagioneSociale",
+                            name = "RagioneSociale"
+                        })
+                    </div>
+                    <div>
+                        @Html.TextBoxFor(m => m.PartitaIva, new
+                        {
+                            @class = "border-stroke dark:border-dark-3 dark:text-dark-6 dark:bg-dark text-body-color focus:border-primary w-full rounded border py-3 px-[14px] text-base outline-none",
+                            placeholder = "P.Iva",
+                            id = "PartitaIva",
+                            name = "PartitaIva"
+                        })
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-7 mb-7 azienda">
+                    <div>
+                        @Html.TextBoxFor(m => m.SDI, new
+                        {
+                            @class = "border-stroke dark:border-dark-3 dark:text-dark-6 dark:bg-dark text-body-color focus:border-primary w-full rounded border py-3 px-[14px] text-base outline-none",
+                            placeholder = "SDI",
+                            id = "SDI",
+                            name = "SDI",
+                            required = "required"
+                        })
+                    </div>
+                </div>
+                <h3 class="text-xl font-bold mb-7">Contatti</h3>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-7 mb-7">
+                    <div>
+                        @Html.TextBoxFor(m => m.Email, new
+                        {
+                            @type = "email",
+                            @class = "border-stroke dark:border-dark-3 dark:text-dark-6 dark:bg-dark text-body-color focus:border-primary w-full rounded border py-3 px-[14px] text-base outline-none",
+                            placeholder = "Email",
+                            id = "emailInput",
+                            name = "Email",
+                            required = "required"
+                        })
+                    </div>
+                    <div>
+                        @Html.TextBoxFor(m => m.PhoneNumber, new
+                        {
+                            @class = "border-stroke dark:border-dark-3 dark:text-dark-6 dark:bg-dark text-body-color focus:border-primary w-full rounded border py-3 px-[14px] text-base outline-none",
+                            placeholder = "Telefono",
+                            id = "PhoneNumber",
+                            name = "PhoneNumber",
+                            required = "required"
+                        })
+                    </div>
+                </div>
+                <h2 class="text-xl font-bold mb-7">Indirizzo</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-7 mb-7">
+                    <div>
+                        @Html.TextBoxFor(m => m.Citta, new
+                        {
+                            @class = "border-stroke dark:border-dark-3 dark:text-dark-6 dark:bg-dark text-body-color focus:border-primary w-full rounded border py-3 px-[14px] text-base outline-none",
+                            placeholder = "Città",
+                            id = "Citta",
+                            name = "Citta",
+                            required = "required"
+                        })
+                    </div>
+                    <div>
+                        @Html.TextBoxFor(m => m.Indirizzo, new
+                        {
+                            @class = "border-stroke dark:border-dark-3 dark:text-dark-6 dark:bg-dark text-body-color focus:border-primary w-full rounded border py-3 px-[14px] text-base outline-none",
+                            placeholder = "Indirizzo",
+                            id = "Indirizzo",
+                            name = "Indirizzo",
+                            required = "required"
+                        })
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-7 mb-7">
+                    <div>
+                        @Html.TextBoxFor(m => m.CAP, new
+                        {
+                            @class = "border-stroke dark:border-dark-3 dark:text-dark-6 dark:bg-dark text-body-color focus:border-primary w-full rounded border py-3 px-[14px] text-base outline-none",
+                            placeholder = "CAP",
+                            id = "CAP",
+                            name = "CAP",
+                            required = "required"
+                        })
+                    </div>
+                    <div>
+                        @Html.TextBoxFor(m => m.Provincia, new
+                        {
+                            @class = "border-stroke dark:border-dark-3 dark:text-dark-6 dark:bg-dark text-body-color focus:border-primary w-full rounded border py-3 px-[14px] text-base outline-none",
+                            placeholder = "Provincia",
+                            id = "Provincia",
+                            name = "Provincia",
+                            required = "required"
+                        })
+                    </div>
+                </div>
+                @if (ViewBag.Referral != null)
+                {
+                    <h2 class="text-2xl font-bold mb-7">Messaggio sul bigliettino (opzionale)</h2>
+                    <div class="grid grid-cols-1 mb-7">
+                        <div>
+                            @Html.TextAreaFor(m => m.MessaggioBiglietto, new
+                            {
+                                @class = "border-stroke dark:border-dark-3 dark:text-dark-6 dark:bg-dark text-body-color focus:border-primary w-full rounded border py-3 px-[14px] text-base outline-none",
+                                placeholder = "Scrivi qui il tuo messaggio",
+                                id = "Messaggio",
+                                name = "Messaggio",
+                                rows = "3"
+                            })
+                        </div>
+                    </div>
+                }
+                <div>
+                    @Html.CheckBoxFor(m => m.Newsletter, new { id = "newsletterCheckbox", name = "Newsletter" })
+                    <label for="newsletterCheckbox">Voglio iscrivermi alla newsletter di FloreMoria</label>
+                </div>
+            </form>
+        </div>
+        <div class="flex flex-col w-full justify-between rounded-lg shadow-md space-y-5 p-5 bg-white" data-aos="fade-left" data-aos-duration="1000">
+            <h2 class="text-2xl font-bold">Prodotti</h2>
+            <p class="hidden text-end italic" id="invalid-product">Prodotti venduti in abbinamento ai bouquet</p>
+            <div class="grid grid-cols-1 gap-4">
+                @if (ordine.SelectedProducts.Any())
+                {
+                    foreach (var item in ordine.SelectedProducts)
+                    {
+                        <div class="flex items-stretch justify-between">
+                            <div class="flex gap-4 w-3/4 items-center">
+                                <div class="w-20 h-20 bg-[url(@item.Immagine)] bg-center bg-cover rounded aspect-square"></div>
+                                <div>
+                                    <h3 class="font-bold text-md">@item.NomeProdotto</h3>
+                                    @if (item.Categoria == 2)
+                                    {
+                                        <h6 class="italic text-sm">(@item.NomeDettaglioProdotto)</h6>
+                                    }
+                                    <div class="text-md text-gray-500 flex items-center gap-2">
+                                        Qtà:
+                                        <form action="/Cart/Less/@item.ProdottoId" method="post">
+                                            <button type="submit" class="cursor-pointer"><i class="fa fa-minus text-sm"></i></button>
+                                        </form>
+                                        @item.Quantita
+                                        <form action="/Cart/More/@item.ProdottoId" method="post">
+                                            <button type="submit" class="cursor-pointer"><i class="fa fa-plus text-sm"></i></button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="w-1/4 flex flex-col justify-around items-end">
+                                <p>€ @(item.Quantita * item.Prezzo)</p>
+                                <form action="/Cart/RemoveItem/@item.ProdottoId" method="post">
+                                    <input type="hidden" name="isFormSubmit" value="true">
+                                    <button type="submit">
+                                        <i class="fa fa-trash text-red-700 cursor-pointer"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <p>Non è presente alcun prodotto</p>
+                }
+            </div>
+            @{
+                var costoSpedizione = ViewBag.Totale > 20 ? 0 : 5.99m;
+                var spedizione = ViewBag.Totale > 20 ? "<del class='italic'>5,99</del> 0,00" : "5,99";
+                var sconto = (ViewBag.Sconto ?? 0) * ViewBag.Totale;
+                <div class="pt-3 border-t">
+                    <h4 class="flex justify-between"><b>Totale prodotti:</b> <span>€ @ViewBag.Totale.ToString("F2")</span></h4>
+                    <h4 class="flex justify-between" id="scontoRow" style="display: none;">
+                        <b>Sconto modalità pagamento:</b> <span>€ -@sconto.ToString("F2")</span>
+                    </h4>
+                    <h4 class="flex justify-between pb-3 border-b"><b>Servizio consegna:</b> <span>€ @Html.Raw(spedizione)</span></h4>
+                    <h4 class="flex justify-between pt-3"><b>Totale ordine:</b> <span id="totale-ordine">€ @(ViewBag.Totale + costoSpedizione)</span></h4>
+                </div>
+            }
+            <button id="submitOrder" class="w-full block bg-[#38679D] hover: bg-[#38679D]/80 text-white text-center p-2 rounded">Procedi</button>
+        </div>
+    </section>
+    <div class="absolute bottom-0 right-0 z-[-1]">
+        <svg width="1440"
+             height="886"
+             viewBox="0 0 1440 886"
+             fill="none"
+             xmlns="http://www.w3.org/2000/svg">
+            <path opacity="0.5"
+                  d="M193.307 -273.321L1480.87 1014.24L1121.85 1373.26C1121.85 1373.26 731.745 983.231 478.513 729.927C225.976 477.317 -165.714 85.6993 -165.714 85.6993L193.307 -273.321Z"
+                  fill="url(#paint0_linear)" />
+            <defs>
+                <linearGradient id="paint0_linear"
+                                x1="1308.65"
+                                y1="1142.58"
+                                x2="602.827"
+                                y2="-418.681"
+                                gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#3056D3" stop-opacity="0.36" />
+                    <stop offset="1" stop-color="#F5F2FD" stop-opacity="0" />
+                    <stop offset="1" stop-color="#F5F2FD" stop-opacity="0.096144" />
+                </linearGradient>
+            </defs>
+        </svg>
+    </div>
+</div>
+
+@if (TempData["Errore"] != null)
+{
+    <section id="error" class="bg-gray-2 py-[60px] dark:bg-dark fixed bottom-0 right-1 lg:right-5 hidden"
+             x-data="{ toastErrorOpen: true, errorTimer: null }"
+             x-init="errorTimer=setTimeout(() =>
+                                {
+                                toastErrorOpen = false;
+                                }, 5000);
+            "
+             x-on:click.away="clearTimeout(errorTimer);
+                                toastErrorOpen = false;
+            "
+             x-on:mouseover="clearTimeout(errorTimer)"
+             x-on:mouseout="errorTimer = setTimeout(() => {
+                                toastErrorOpen = false;
+                                }, 5000);
+            "
+             :class="toastErrorOpen ? 'block' : 'hidden'">
+        <div class="mx-auto px-4 sm:container">
+            <div class="relative flex min-w-[350px] lg:min-w-[450px] items-center rounded-lg border border-gray-200 bg-white p-4 py-[18px] shadow-xl sm:px-[30px] dark:border-dark-3 dark:bg-dark-2 dark:shadow-box-dark">
+                <div class="mr-5 flex h-10 w-full max-w-[40px] items-center justify-center rounded-full bg-red-500">
+                    <svg width="24"
+                         height="25"
+                         viewBox="0 0 24 25"
+                         fill="none"
+                         xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 1.17499C5.7375 1.17499 0.675003 6.23749 0.675003 12.5C0.675003 18.7625 5.7375 23.8625 12 23.8625C18.2625 23.8625 23.3625 18.7625 23.3625 12.5C23.3625 6.23749 18.2625 1.17499 12 1.17499ZM12 22.175C6.675 22.175 2.3625 17.825 2.3625 12.5C2.3625 7.17499 6.675 2.86249 12 2.86249C17.325 2.86249 21.675 7.21249 21.675 12.5375C21.675 17.825 17.325 22.175 12 22.175Z"
+                              fill="white" />
+                        <path d="M15.5625 9.43751C15.3094 9.18439 14.9156 9.18439 14.6625 9.43751L12 12.1L9.3375 9.43751C9.08437 9.18439 8.69062 9.18439 8.4375 9.43751C8.18437 9.69064 8.18437 10.0844 8.4375 10.3375L11.1 13L8.4375 15.6625C8.18437 15.9156 8.18437 16.3094 8.4375 16.5625C8.55 16.675 8.71875 16.7594 8.8875 16.7594C9.05625 16.7594 9.225 16.7031 9.3375 16.5625L12 13.9L14.6625 16.5625C14.775 16.675 14.9437 16.7594 15.1125 16.7594C15.2812 16.7594 15.45 16.7031 15.5625 16.5625C15.8156 16.3094 15.8156 15.9156 15.5625 15.6625L12.9 13L15.5625 10.3375C15.8156 10.0844 15.8156 9.69064 15.5625 9.43751Z"
+                              fill="white" />
+                    </svg>
+                </div>
+                <div class="flex w-full items-center justify-between">
+                    <div>
+                        <h6 class="text-base font-semibold text-dark sm:text-lg dark:text-white">
+                            Attenzione!
+                        </h6>
+                        <p class="text-sm text-body-color dark:text-dark-6 text-nowrap">
+                            @TempData["Errore"]
+                        </p>
+                    </div>
+
+                    <button class="text-dark-5 hover:text-red cursor-pointer" onclick="closeError()">
+                        <svg width="18"
+                             height="18"
+                             viewBox="0 0 18 18"
+                             fill="none"
+                             xmlns="http://www.w3.org/2000/svg"
+                             class="fill-current">
+                            <path d="M9.9 9.00001L16.7625 2.13751C17.0156 1.88439 17.0156 1.49064 16.7625 1.23751C16.5094 0.984387 16.1156 0.984387 15.8625 1.23751L9 8.10001L2.1375 1.23751C1.88437 0.984387 1.49062 0.984387 1.2375 1.23751C0.984372 1.49064 0.984372 1.88439 1.2375 2.13751L8.1 9.00001L1.2375 15.8625C0.984372 16.1156 0.984372 16.5094 1.2375 16.7625C1.35 16.875 1.51875 16.9594 1.6875 16.9594C1.85625 16.9594 2.025 16.9031 2.1375 16.7625L9 9.90001L15.8625 16.7625C15.975 16.875 16.1437 16.9594 16.3125 16.9594C16.4812 16.9594 16.65 16.9031 16.7625 16.7625C17.0156 16.5094 17.0156 16.1156 16.7625 15.8625L9.9 9.00001Z" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+}
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            function aggiornaRequired() {
+                var isPrivato = document.getElementById('radioPrivato').checked;
+                if (isPrivato) {
+                    document.querySelectorAll('.privato').forEach(x => x.classList.remove('hidden'));
+                    document.querySelectorAll('.azienda').forEach(x => x.classList.add('hidden'));
+                } else {
+                    document.querySelectorAll('.privato').forEach(x => x.classList.add('hidden'));
+                    document.querySelectorAll('.azienda').forEach(x => x.classList.remove('hidden'));
+                }
+
+                // Campi privato
+                document.getElementById('Nome').required = isPrivato;
+                document.getElementById('Cognome').required = isPrivato;
+                // Campi azienda
+                document.getElementById('RagioneSociale').required = !isPrivato;
+                document.getElementById('PartitaIva').required = !isPrivato;
+                document.getElementById('SDI').required = !isPrivato;
+            }
+            document.getElementById('radioPrivato').addEventListener('change', aggiornaRequired);
+            document.getElementById('radioAzienda').addEventListener('change', aggiornaRequired);
+            aggiornaRequired();
+        });
+    </script>
+
+    <script>
+        function updateFormState() {
+            const form = document.getElementById('checkoutForm');
+            const submit = document.getElementById('submitOrder');
+            const formElements = form.elements;
+            const hasProducts = @(ordine.SelectedProducts.Any() && ordine.SelectedProducts.Any(x => x.Categoria != 4) ? "true" : "false");
+            const invalidProduct = document.getElementById("invalid-product");
+
+            if (@ViewBag.Alert) {
+               invalidProduct.style.display = "block";
+            }
+
+            for (let i = 0; i < formElements.length; i++) {
+                formElements[i].disabled = !hasProducts;
+                formElements[i].style.cursor = hasProducts ? "auto" : "not-allowed";
+            }
+
+                if (hasProducts) {
+                    submit.style.pointerEvents = "auto";
+                    submit.style.opacity = "1";
+                    submit.style.cursor = "pointer";
+                } else {
+                    submit.style.pointerEvents = "none";
+                    submit.style.opacity = "0.5";
+                    submit.style.cursor = "not-allowed";
+                }
+
+                const emailInput = document.getElementById('emailInput');
+                const newsletterCheckbox = document.getElementById('newsletterCheckbox');
+
+                newsletterCheckbox.disabled = true;
+
+                emailInput.addEventListener('input', function() {
+                    const isValidEmail = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/.test(this.value);
+                    console.log(isValidEmail);
+                    newsletterCheckbox.disabled = !isValidEmail;
+                });
+
+                submit.addEventListener('click', function(){
+                    if (form != null && !form.checkValidity()) {
+                        form.reportValidity();
+                        return;
+                    } else {
+                        fetch('/Cart/FinalizeCart', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                    Nome: form.elements['Nome'].value,
+                                    Cognome: form.elements['Cognome'].value,
+                                    CodiceFiscale: form.elements['CodiceFiscale'].value,
+                                    RagioneSociale: form.elements['RagioneSociale'].value,
+                                    PartitaIva: form.elements['PartitaIva'].value,
+                                    Email: form.elements['Email'].value,
+                                    PhoneNumber: form.elements['PhoneNumber'].value,
+                                    Citta: form.elements['Citta'].value,
+                                    Indirizzo: form.elements['Indirizzo'].value,
+                                    CAP: form.elements['CAP'].value,
+                                    Provincia: form.elements['Provincia'].value,
+                                    Azienda: form.elements['RagioneSociale'].value != '',
+                                    SDI: form.elements['SDI'].value != '',
+                                    Newsletter: newsletterCheckbox.checked,
+                                    MessaggioBiglietto: form.elements["Messaggio"]?.value || ""
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                const rateButton = document.getElementById('rate');
+                                const isRateale = rateButton && rateButton.checked;
+
+                                fetch('/Cart/CreateCheckoutSession', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({
+                                        hasRatealeProducts: isRateale
+                                    })
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.url) {
+                                        window.location.href = data.url; // Redirect a Stripe
+                                    }
+                                })
+                                    .catch(error => {
+                                    console.error('Errore durante la chiamata a CreateCheckoutSession:', error);
+                                });
+                            } else {
+                                console.error(response);
+                                const error =document.getElementById('error');
+                                if(error){
+                                    error.classList.remove('hidden');
+                                }
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Errore di rete:', error);
+                        })
+                    }
+                })
+            }
+
+            document.addEventListener('DOMContentLoaded', updateFormState);
+            document.addEventListener('DOMContentLoaded', function() {
+                const rateButton = document.getElementById('rate');
+                if(rateButton != null) {
+                    const unicaButton = document.getElementById('unica');
+                    const totaleOrdineElement = document.getElementById('totale-ordine');
+                    const scontoRow = document.getElementById('scontoRow');
+
+                    const totaleProdotti = parseFloat('@ViewBag.Totale.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)'.replace(',', '.'));
+                    const costoSpedizione = parseFloat('@costoSpedizione.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)'.replace(',', '.'));
+                    const scontoUnica = parseFloat('@sconto.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)'.replace(',', '.'));
+
+                    function updateTotale(sconto) {
+                        const totaleAttuale = totaleProdotti + costoSpedizione;
+                        const totaleScontato = totaleAttuale - sconto;
+                        totaleOrdineElement.innerText = '€ ' + totaleScontato.toFixed(2);
+                    }
+
+                    rateButton.addEventListener('change', function() {
+                        scontoRow.style.display = 'none';
+                        updateTotale(0);
+                    });
+
+                    unicaButton.addEventListener('change', function() {
+                        scontoRow.style.display = 'flex';
+                        updateTotale(scontoUnica);
+                    });
+
+                    if (unicaButton.checked) {
+                        scontoRow.style.display = 'flex';
+                        updateTotale(scontoUnica);
+                    }
+                }
+            });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const messageArea = document.getElementById('Messaggio');
+            if (messageArea) {
+                messageArea.addEventListener('input', function () {
+                    const words = messageArea.value.trim().split(/\s+/);
+                    if (words.length > 20) {
+                        messageArea.value = words.slice(0, 20).join(' ');
+                    }
+                });
+            }
+        });
+    </script>
+}

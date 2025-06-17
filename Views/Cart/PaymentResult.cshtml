@@ -1,0 +1,93 @@
+﻿@{
+    ViewBag.Title = "Risultato Pagamento";
+}
+
+<style>
+    .navbar .navbar-brand,
+    .navbar .nav-link {
+        color: #369;
+    }
+
+    .navbar .nav-link:hover, .cart:hover {
+        color: white;
+    }
+
+    ._failed {
+        border-bottom: solid 4px red !important;
+    }
+
+        ._failed i {
+            color: red !important;
+        }
+
+    ._success {
+        box-shadow: 0 15px 25px #00000019;
+        padding: 45px;
+        width: 100%;
+        text-align: center;
+        margin: 40px auto;
+        border-bottom: solid 4px #28a745;
+    }
+
+        ._success i {
+            font-size: 55px;
+            color: #28a745;
+        }
+
+        ._success h2 {
+            margin-bottom: 12px;
+            font-size: 40px;
+            font-weight: 500;
+            line-height: 1.2;
+            margin-top: 10px;
+        }
+
+        ._success p {
+            margin-bottom: 0px;
+            font-size: 18px;
+            color: #495057;
+            font-weight: 500;
+        }
+</style>
+
+<div class="flex flex-col w-3/4 mx-auto pb-12">
+    @if (TempData["Successo"] != null)
+    {     
+        <div class="flex justify-center items-center h-[70vh]">
+            <div class="w-2/5">
+                <div class="message-box _success">
+                    <i class="fa fa-check-circle" aria-hidden="true"></i>
+                    <h2> Pagamento riuscito. </h2>
+                    <p>
+                        Grazie per il tuo acquisto. <br>
+                        Ti invieremo a breve una mail di riepilogo.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        if(TempData["ReturnUrl"] != null)
+        {
+            <a class="text-center text-2xl hover:text-[#38679D] font-semibold" href="@TempData["ReturnUrl"]">Torna al sito</a>
+        }
+        else
+        {
+            <a class="text-center text-2xl hover:text-[#38679D] font-semibold" href="/">Torna alla home</a>
+        }
+    }
+    else if(TempData["Errore"] != null)
+    {
+        <div class="flex justify-center items-center h-[70vh]">
+            <div class="w-2/5">
+                <div class="message-box _success _failed">
+                    <i class="fa fa-times-circle" aria-hidden="true"></i>
+                    <h2> Pagamento annullato. </h2>
+                    <p>  Riprova più tardi </p>
+                </div>
+            </div>
+        </div>
+
+        <a class="text-center text-2xl hover:text-[#38679D] font-semibold" href="/Cart/GetCart">Torna al carrello</a>
+    }
+
+</div>

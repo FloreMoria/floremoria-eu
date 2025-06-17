@@ -1,0 +1,1017 @@
+﻿@using Microsoft.AspNet.Identity;
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewBag.Title - FloreMoria</title>
+    <script type="importmap"></script>
+    <link rel="stylesheet" href="~/Content/slick.css">
+    <link rel="stylesheet" href="~/Content/slick-theme.css">
+    <link rel="stylesheet" href="~/Content/magnific-popup.css">
+    <link rel="stylesheet" href="~/Content/tooplate-infinite-loop.css" />
+    <link rel="stylesheet" href="~/Content/footer.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+          integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+          crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+    <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
+    <script src="~/Scripts/tailwind.js"></script>
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'it',
+                includedLanguages: 'en,fr,de,es,it',
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+            }, 'google_translate_element');
+        }
+    </script>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-K00DQKQXFC"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-K00DQKQXFC');
+    </script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <!-- OpenReplay Tracking Code -->
+    <script>
+        var initOpts = {
+            projectKey: "IMh7zU7Blecr2ibII8CJ",
+            defaultInputMode: 1,
+            ignoreURLs: ['/Admin/', '/Account/Login', '/Account/Register'],
+            obscureTextNumbers: true,
+            obscureTextEmails: true,
+        };
+        var startOpts = {
+          @if(User.Identity.IsAuthenticated)
+          {
+              <text>
+                  userID: "@User.Identity.GetUserId()",
+                  metadata: {
+                    name: "@User.Identity.GetUserName()",
+                    role: "@(User.IsInRole("Admin") ? "Admin" : "User")"
+                  }
+              </text>
+          }
+          else
+          {
+              <text>
+                userID: ""
+              </text>
+          }
+        };
+        (function (A, s, a, y, e, r) {
+            r = window.OpenReplay = [e, r, y, [s - 1, e]];
+            s = document.createElement('script'); s.src = A; s.async = !a;
+            document.getElementsByTagName('head')[0].appendChild(s);
+            r.start = function (v) { r.push([0]) };
+            r.stop = function (v) { r.push([1]) };
+            r.setUserID = function (id) { r.push([2, id]) };
+            r.setUserAnonymousID = function (id) { r.push([3, id]) };
+            r.setMetadata = function (k, v) { r.push([4, k, v]) };
+            r.event = function (k, p, i) { r.push([5, k, p, i]) };
+            r.issue = function (k, p) { r.push([6, k, p]) };
+            r.isActive = function () { return false };
+            r.getSessionToken = function () { };
+        })("//static.openreplay.com/latest/openreplay.js", 1, 0, initOpts, startOpts);
+    </script>
+    <style>
+        * {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+            *::-webkit-scrollbar {
+                display: none;
+            }
+
+        [x-cloak] {
+            display: none !important;
+        }
+
+        .skiptranslate iframe {
+            display: none;
+        }
+
+        body {
+            top: 0 !important;
+        }
+
+        iframe.adsbox {
+            height: 0 !important;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-md tm-navbar p-4 top-[-2px]" id="tmNav">
+            <div class="w-full xl:px-7 flex justify-between">
+                <div class="tm-next self-center">
+                    @if (!User.IsInRole("Admin"))
+                    {
+                        <a href="/" class="navbar-brand flex gap-3 items-center"><img src="/Content/img/logo.png" alt="Alternate Text" class="h-14 lg:h-12" /><span class="hidden lg:block">FloreMoria</span></a>
+                    }
+                    else
+                    {
+                        <a href="/Admin/Dashboard" class="navbar-brand flex gap-3 items-center"><img src="/Content/img/logo.png" alt="Alternate Text" class="h-14 lg:h-12" /><span class="hidden lg:block">FloreMoria</span></a>
+                    }
+                </div>
+
+                <div class="flex flex-row-reverse items-center gap-2">
+                    <div x-data="{ dropdownNavbarOpen: false }"
+                         x-on:click.outside="dropdownNavbarOpen = false"
+                         class="xl:hidden relative inline-block text-left">
+                        <button x-on:click="dropdownNavbarOpen = !dropdownNavbarOpen"
+                                class="flex items-center nav-link tm-nav-link px-4 py-[9px]">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <div :class="dropdownNavbarOpen ? 'top-full opacity-100 visible' : 'top-[110%] invisible opacity-0' "
+                             x-cloak
+                             class="shadow dark:shadow-box-dark absolute right-0 z-40 mt-2 min-w-[200px] whitespace-nowrap rounded-md bg-white dark:bg-dark py-[10px] transition-all">
+                            @if (!User.IsInRole("Admin"))
+                            {
+                                <div x-data="{ open: false }" class="text-base text-[#38B]">
+                                    <button x-on:click="open = !open" class="w-full flex justify-between items-center px-5 py-2 hover:bg-[#F5F7FD]">
+                                        <span>Prodotti</span>
+                                        <svg class="w-4 h-4 transition-transform" :class="{ 'rotate-180': open }" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                        </svg>
+                                    </button>
+                                    <div x-show="open" x-collapse class="pl-4">
+                                        <a class="hover:bg-[#F5F7FD] dark:hover:bg-primary/5 hover:text-white block px-5 py-2 text-base" href="/Home/Prodotti?section=0">Bouquet</a>
+                                        <a class="hover:bg-[#F5F7FD] dark:hover:bg-primary/5 hover:text-white block px-5 py-2 text-base" href="/Home/Prodotti?section=1">Carnet</a>
+                                        <a class="hover:bg-[#F5F7FD] dark:hover:bg-primary/5 hover:text-white block px-5 py-2 text-base" href="/Home/Prodotti?section=2">Abbonamenti</a>
+                                        <a class="hover:bg-[#F5F7FD] dark:hover:bg-primary/5 hover:text-white block px-5 py-2 text-base" href="/Home/Prodotti?section=3">Lutto e Camera Ardente</a>
+                                        <a class="hover:bg-[#F5F7FD] dark:hover:bg-primary/5 hover:text-white block px-5 py-2 text-base" href="/Home/Prodotti?section=4">Accessori</a>
+                                    </div>
+                                </div>
+                                <a class="hover:bg-[#F5F7FD] dark:hover:bg-primary/5 hover:text-white block px-5 py-2 text-base text-nowrap" href="/Home/About">Chi Siamo</a>
+                                <a class="hover:bg-[#F5F7FD] dark:hover:bg-primary/5 hover:text-white block px-5 py-2 text-base text-nowrap" href="/Home/Blog">Blog</a>
+                                <div x-data="{ openPartner: false }" class="text-base text-[#38B]">
+                                    <button x-on:click="openPartner = !openPartner" class="w-full flex justify-between items-center px-5 py-2 hover:bg-[#F5F7FD]">
+                                        <span>Partnership</span>
+                                        <svg class="w-4 h-4 transition-transform" :class="{ 'rotate-180': openPartner }" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                        </svg>
+                                    </button>
+                                    <div x-show="openPartner" x-collapse class="pl-4">
+                                        <a class="hover:bg-[#F5F7FD] dark:hover:bg-primary/5 hover:text-white block px-5 py-2 text-base text-nowrap" href="/Home/Investor">Investitori</a>
+                                        <a class="hover:bg-[#F5F7FD] dark:hover:bg-primary/5 hover:text-white block px-5 py-2 text-base text-nowrap" href="/Home/Agency">Agenzie funebri</a>
+                                        <a class="hover:bg-[#F5F7FD] dark:hover:bg-primary/5 hover:text-white block px-5 py-2 text-base text-nowrap" href="/Home/Partner">Fioristi partner</a>
+                                    </div>
+                                </div>
+                                <a class="hover:bg-[#F5F7FD] dark:hover:bg-primary/5 hover:text-white block px-5 py-2 text-base text-nowrap" href="/Home/FAQ">FAQ</a>
+                                <a class="hover:bg-[#F5F7FD] dark:hover:bg-primary/5 hover:text-white block px-5 py-2 text-base text-nowrap" href="/Home/Contact">Contatti</a>
+                                <div x-data="{ openPartner: false }" class="text-base text-[#38B]">
+                                    <button x-on:click="openPartner = !openPartner" class="w-full flex justify-between items-center px-5 py-2 hover:bg-[#F5F7FD]">
+                                        <span>Utente</span>
+                                        <svg class="w-4 h-4 transition-transform" :class="{ 'rotate-180': openPartner }" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                        </svg>
+                                    </button>
+                                    <div x-show="openPartner" x-collapse class="pl-4">
+                                        <a class="hover:bg-[#F5F7FD] dark:hover:bg-primary/5 hover:text-white block px-5 py-2 text-base text-nowrap" href="/Admin/UserProfile/@User.Identity.GetUserId()">Profilo</a>
+                                        <a class="hover:bg-[#F5F7FD] dark:hover:bg-primary/5 hover:text-white block px-5 py-2 text-base text-nowrap">
+                                            <form action="/Auth/Logout" method="post" style="display:inline;">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="notranslate">
+                                                    Logout
+                                                </button>
+                                            </form>
+                                        </a>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div x-data="{ openDash: false }" class="text-base text-[#38B]">
+                                    <button x-on:click="openDash = !openDash" class="w-full flex justify-between items-center px-5 py-2 hover:bg-[#F5F7FD]">
+                                        <span>Dashboard</span>
+                                        <svg class="w-4 h-4 transition-transform" :class="{ 'rotate-180': openDash }" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                        </svg>
+                                    </button>
+                                    <div x-show="openDash" x-collapse class="pl-4">
+                                        <a class="hover:bg-[#F5F7FD] dark:hover:bg-primary/5 hover:text-white block px-5 py-2 text-base" href="/Admin/Dashboard">Lista Ordini</a>
+                                        <a class="hover:bg-[#F5F7FD] dark:hover:bg-primary/5 hover:text-white block px-5 py-2 text-base" href="/Admin/Statistics">Statistiche Ordini</a>
+                                    </div>
+                                </div>
+                                <a class="hover:bg-[#F5F7FD] dark:hover:bg-primary/5 hover:text-white block px-5 py-2 text-base text-nowrap" href="/Admin/UserList">Utenti</a>
+                                <a class="hover:bg-[#F5F7FD] dark:hover:bg-primary/5 hover:text-white block px-5 py-2 text-base text-nowrap" href="/Admin/PartnerList">Partner Aziendali</a>
+                                <a class="hover:bg-[#F5F7FD] dark:hover:bg-primary/5 hover:text-white block px-5 py-2 text-base text-nowrap" href="/Admin/ProductList">Prodotti</a>
+                                <a class="hover:bg-[#F5F7FD] dark:hover:bg-primary/5 hover:text-white block px-5 py-2 text-base text-nowrap" href="/Admin/ArticleList">Articoli Blog</a>
+                                <a>
+                                    <form action="/Auth/Logout" method="post" style="display:inline;">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="text-base text-[#38B] w-full flex justify-between items-center px-5 py-2 hover:bg-[#F5F7FD] notranslate">
+                                            Logout
+                                        </button>
+                                    </form>
+                                </a>
+                            }
+                        </div>
+                    </div>
+                    <div class="nav-item xl:hidden">
+                        <a href="/Cart/GetCart"
+                           class="flex items-center nav-link tm-nav-link px-4 py-[9px] cursor-pointer">
+                            <i class="fa-solid fa-cart-shopping"></i>
+                        </a>
+                    </div>
+                    <div class="nav-item xl:hidden">
+                        <div id="google_translate_element" class="hidden"></div>
+                        <div x-data="
+                                          {
+                                          dropdownTranslateOpen: false
+                                          }
+                                    "
+                             x-on:click.outside="dropdownTranslateOpen = false"
+                             class="relative inline-block text-left">
+                            <button x-on:click="dropdownTranslateOpen = !dropdownTranslateOpen"
+                                    class="flex items-center nav-link tm-nav-link px-4 py-[9px] cursor-pointer" id="custom-translate-btn">
+                                <i class="fa-solid fa-globe"></i>
+                            </button>
+                            <div :class="dropdownTranslateOpen ? 'top-full opacity-100 visible' : 'top-[110%] invisible opacity-0' "
+                                 x-cloak
+                                 class="shadow dark:shadow-box-dark absolute left-0 z-40 mt-2 whitespace-nowrap min-w-full rounded-md bg-white dark:bg-dark py-[10px] transition-all">
+                                <a class="hover:bg-[#F5F7FD] dark:hover:bg-primary/5 hover:text-white block px-5 py-2 text-base notranslate cursor-pointer" onclick="setLanguage('en')">ENG</a>
+                                <a class="hover:bg-[#F5F7FD] dark:hover:bg-primary/5 hover:text-white block px-5 py-2 text-base notranslate cursor-pointer" onclick="setLanguage('fr')">FRA</a>
+                                <a class="hover:bg-[#F5F7FD] dark:hover:bg-primary/5 hover:text-white block px-5 py-2 text-base notranslate cursor-pointer" onclick="setLanguage('it')">ITA</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hidden xl:block" id="navbarSupportedContent">
+                    <ul class="navbar-nav ml-auto flex gap-4 h-full items-center">
+                        @if (!User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <div x-data="
+                                      {
+                                      dropdownProdottiOpen: false
+                                      }
+                                "
+                                     x-on:click.outside="dropdownProdottiOpen = false"
+                                     class="relative inline-block text-left">
+                                    <button x-on:click="dropdownProdottiOpen = !dropdownProdottiOpen"
+                                            class="flex items-center nav-link tm-nav-link px-4 py-[5px] cursor-pointer">
+                                        Prodotti
+                                        <span class="pl-4">
+                                            <svg width="20"
+                                                 height="20"
+                                                 viewBox="0 0 20 20"
+                                                 fill="none"
+                                                 xmlns="http://www.w3.org/2000/svg"
+                                                 class="fill-current">
+                                                <path d="M10 14.25C9.8125 14.25 9.65625 14.1875 9.5 14.0625L2.3125 7C2.03125 6.71875 2.03125 6.28125 2.3125 6C2.59375 5.71875 3.03125 5.71875 3.3125 6L10 12.5312L16.6875 5.9375C16.9688 5.65625 17.4063 5.65625 17.6875 5.9375C17.9687 6.21875 17.9687 6.65625 17.6875 6.9375L10.5 14C10.3437 14.1563 10.1875 14.25 10 14.25Z" />
+                                            </svg>
+                                        </span>
+                                    </button>
+                                    <div :class="dropdownProdottiOpen ? 'top-full opacity-100 visible' : 'top-[110%] invisible opacity-0' "
+                                         x-cloak
+                                         class="shadow dark:shadow-box-dark absolute left-0 z-40 mt-2 whitespace-nowrap min-w-full rounded-md bg-white dark:bg-dark py-[10px] transition-all">
+                                        <a class="hover:bg-[#F5F7FD] dark:hover:bg-primary/5 hover:text-white block px-5 py-2 text-base text-nowrap" href="/Home/Prodotti?section=0">Bouquet</a>
+                                        <a class="hover:bg-[#F5F7FD] dark:hover:bg-primary/5 hover:text-white block px-5 py-2 text-base text-nowrap" href="/Home/Prodotti?section=1">Carnet</a>
+                                        <a class="hover:bg-[#F5F7FD] dark:hover:bg-primary/5 hover:text-white block px-5 py-2 text-base text-nowrap" href="/Home/Prodotti?section=2">Abbonamenti</a>
+                                        <a class="hover:bg-[#F5F7FD] dark:hover:bg-primary/5 hover:text-white block px-5 py-2 text-base text-nowrap" href="/Home/Prodotti?section=3">Lutto e Camera Ardente</a>
+                                        <a class="hover:bg-[#F5F7FD] dark:hover:bg-primary/5 hover:text-white block px-5 py-2 text-base text-nowrap" href="/Home/Prodotti?section=4">Accessori</a>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link tm-nav-link py-2 px-4" href="/Home/About">Chi Siamo</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link tm-nav-link py-2 px-4" href="/Home/Blog">Blog</a>
+                            </li>
+                            <li class="nav-item">
+                                <div x-data="
+                                      {
+                                      dropdownPartnerOpen: false
+                                      }
+                                "
+                                     x-on:click.outside="dropdownPartnerOpen = false"
+                                     class="relative inline-block text-left">
+                                    <button x-on:click="dropdownPartnerOpen = !dropdownPartnerOpen"
+                                            class="flex items-center nav-link tm-nav-link px-4 py-[5px] cursor-pointer">
+                                        Partnership
+                                        <span class="pl-4">
+                                            <svg width="20"
+                                                 height="20"
+                                                 viewBox="0 0 20 20"
+                                                 fill="none"
+                                                 xmlns="http://www.w3.org/2000/svg"
+                                                 class="fill-current">
+                                                <path d="M10 14.25C9.8125 14.25 9.65625 14.1875 9.5 14.0625L2.3125 7C2.03125 6.71875 2.03125 6.28125 2.3125 6C2.59375 5.71875 3.03125 5.71875 3.3125 6L10 12.5312L16.6875 5.9375C16.9688 5.65625 17.4063 5.65625 17.6875 5.9375C17.9687 6.21875 17.9687 6.65625 17.6875 6.9375L10.5 14C10.3437 14.1563 10.1875 14.25 10 14.25Z" />
+                                            </svg>
+                                        </span>
+                                    </button>
+                                    <div :class="dropdownPartnerOpen ? 'top-full opacity-100 visible' : 'top-[110%] invisible opacity-0' "
+                                         x-cloak
+                                         class="shadow dark:shadow-box-dark absolute left-0 z-40 mt-2 w-full rounded-md bg-white dark:bg-dark py-[10px] transition-all">
+                                        <a class="hover:bg-[#F5F7FD] dark:hover:bg-primary/5 hover:text-white block px-5 py-2 text-base" href="/Home/Investor">Investitori</a>
+                                        <a class="hover:bg-[#F5F7FD] dark:hover:bg-primary/5 hover:text-white block px-5 py-2 text-base" href="/Home/Agency">Agenzie funebri</a>
+                                        <a class="hover:bg-[#F5F7FD] dark:hover:bg-primary/5 hover:text-white block px-5 py-2 text-base" href="/Home/Partner">Fioristi partner</a>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="nav-item">
+                                <div x-data="
+                                      {
+                                      dropdownSupportOpen: false
+                                      }
+                                "
+                                     x-on:click.outside="dropdownSupportOpen = false"
+                                     class="relative inline-block text-left">
+                                    <button x-on:click="dropdownSupportOpen = !dropdownSupportOpen"
+                                            class="flex items-center nav-link tm-nav-link px-4 py-[5px] cursor-pointer">
+                                        Supporto
+                                        <span class="pl-4">
+                                            <svg width="20"
+                                                 height="20"
+                                                 viewBox="0 0 20 20"
+                                                 fill="none"
+                                                 xmlns="http://www.w3.org/2000/svg"
+                                                 class="fill-current">
+                                                <path d="M10 14.25C9.8125 14.25 9.65625 14.1875 9.5 14.0625L2.3125 7C2.03125 6.71875 2.03125 6.28125 2.3125 6C2.59375 5.71875 3.03125 5.71875 3.3125 6L10 12.5312L16.6875 5.9375C16.9688 5.65625 17.4063 5.65625 17.6875 5.9375C17.9687 6.21875 17.9687 6.65625 17.6875 6.9375L10.5 14C10.3437 14.1563 10.1875 14.25 10 14.25Z" />
+                                            </svg>
+                                        </span>
+                                    </button>
+                                    <div :class="dropdownSupportOpen ? 'top-full opacity-100 visible' : 'top-[110%] invisible opacity-0' "
+                                         x-cloak
+                                         class="shadow dark:shadow-box-dark absolute left-0 z-40 mt-2 w-full rounded-md bg-white dark:bg-dark py-[10px] transition-all">
+                                        <a class="hover:bg-[#F5F7FD] dark:hover:bg-primary/5 hover:text-white block px-5 py-2 text-base" href="/Home/FAQ">FAQ</a>
+                                        <a class="hover:bg-[#F5F7FD] dark:hover:bg-primary/5 hover:text-white block px-5 py-2 text-base" href="/Home/Contact">Contatti</a>
+                                    </div>
+                                </div>
+                            </li>
+                            if (User.Identity.IsAuthenticated)
+                            {
+                                <li class="nav-item">
+                                    <div x-data="
+                                                    {
+                                                        dropdownUserOpen: false
+                                                    }
+                                                "
+                                         x-on:click.outside="dropdownUserOpen = false"
+                                         class="relative inline-block text-left">
+                                        <button x-on:click="dropdownUserOpen = !dropdownUserOpen"
+                                                class="flex items-center nav-link tm-nav-link px-4 py-[9px] cursor-pointer">
+                                            <i class="fa-solid fa-user"></i>
+                                        </button>
+                                        <div :class="dropdownUserOpen ? 'top-full opacity-100 visible' : 'top-[110%] invisible opacity-0' "
+                                             x-cloak
+                                             class="shadow dark:shadow-box-dark absolute left-0 z-40 mt-2 whitespace-nowrap min-w-full rounded-md bg-white dark:bg-dark py-[10px] transition-all">
+                                            <a class="hover:bg-[#F5F7FD] dark:hover:bg-primary/5 hover:text-white block px-5 py-2 text-base" href="/Admin/UserProfile/@User.Identity.GetUserId()">Profilo</a>
+                                            <a class="hover:bg-[#F5F7FD] dark:hover:bg-primary/5 hover:text-white block px-5 py-2 text-base cursor-pointer">
+                                                <form action="/Auth/Logout" method="post" style="display:inline;">
+                                                    @Html.AntiForgeryToken()
+                                                    <button type="submit" class="notranslate cursor-pointer">
+                                                        Logout
+                                                    </button>
+                                                </form>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </li>
+                            }
+                            <li class="nav-item" x-data="cart()" x-init="initCart">
+                                <a class="nav-link tm-nav-link py-2 px-4 cursor-pointer" x-on:click="isOpen = !isOpen; fetchCartItems()">
+                                    <i class="fa-solid fa-cart-shopping"></i>
+                                </a>
+                                <div x-show="isOpen"
+                                     x-cloak
+                                     class="relative z-10" aria-labelledby="slide-over-title" role="dialog" aria-modal="true">
+                                    <div x-transition:enter="ease-in-out duration-100"
+                                         x-transition:enter-start="opacity-0"
+                                         x-transition:enter-end="opacity-100"
+                                         x-transition:leave="ease-in-out duration-100"
+                                         x-transition:leave-start="opacity-100"
+                                         x-transition:leave-end="opacity-0"
+                                         class="fixed inset-0 bg-gray-500/75 transition-opacity" aria-hidden="true"></div>
+
+                                    <div class="fixed inset-0 overflow-hidden">
+                                        <div class="absolute inset-0 overflow-hidden">
+                                            <div x-show="isOpen"
+                                                 x-transition:enter="transform transition ease-in-out duration-500 sm:duration-700"
+                                                 x-transition:enter-start="translate-x-full"
+                                                 x-transition:enter-end="translate-x-0"
+                                                 x-transition:leave="transform transition ease-in-out duration-500 sm:duration-700"
+                                                 x-transition:leave-start="translate-x-0"
+                                                 x-transition:leave-end="translate-x-full"
+                                                 class="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10">
+                                                <div class="pointer-events-auto w-screen max-w-md">
+                                                    <div class="flex h-full flex-col overflow-y-scroll bg-white shadow-xl">
+                                                        <div class="flex-1 overflow-y-auto px-4 py-6 sm:px-6">
+                                                            <div class="flex items-start justify-between">
+                                                                <h2 class="text-lg font-medium text-gray-900" id="slide-over-title">Carrello</h2>
+                                                                <div class="ml-3 flex h-7 items-center">
+                                                                    <button type="button" class="relative -m-2 p-2 text-gray-400 hover:text-gray-500 cursor-pointer" x-on:click="isOpen = !isOpen">
+                                                                        <span class="absolute -inset-0.5"></span>
+                                                                        <span class="sr-only">Close panel</span>
+                                                                        <svg class="size-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+                                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                                                                        </svg>
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="mt-8">
+                                                                <div class="flow-root">
+                                                                    <ul role="list" class="-my-6 divide-y divide-gray-200">
+                                                                        <template x-for="item in items" :key="item.ProdottoId">
+                                                                            <li class="flex py-6">
+                                                                                <div class="size-24 shrink-0 overflow-hidden rounded-md border border-gray-200">
+                                                                                    <img :src="item.Immagine" alt="prodotto" class="size-full object-cover">
+                                                                                </div>
+                                                                                <div class="ml-4 flex flex-1 flex-col">
+                                                                                    <div>
+                                                                                        <div class="flex justify-between text-base font-medium text-gray-900">
+                                                                                            <div>
+                                                                                                <h3 x-text="item.NomeProdotto"></h3>
+                                                                                                <template x-if="item.Categoria == 2">
+                                                                                                    <h6 class="italic text-sm" x-text="'(' + item.NomeDettaglioProdotto + ')'"></h6>
+                                                                                                </template>
+                                                                                            </div>
+                                                                                            <p class="ml-4" x-text="'€' + (item.Prezzo * item.Quantita).toFixed(2)"></p>
+                                                                                        </div>
+                                                                                        <div class="text-gray-500 text-base flex items-center gap-2">
+                                                                                            Qtà:
+                                                                                            <button x-on:click="less(item.ProdottoId)" class="cursor-pointer"><i class="fa fa-minus text-sm"></i></button>
+                                                                                            <span x-text="item.Quantita"></span>
+                                                                                            <button x-on:click="more(item.ProdottoId)" class="cursor-pointer"><i class="fa fa-plus text-sm"></i></button>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="flex flex-1 items-end justify-end text-sm">
+                                                                                        <div class="flex">
+                                                                                            <button type="button" x-on:click="removeItem(item.ProdottoId)" class="font-medium text-[#38679D] hover:text-[#38679D]/90 cursor-pointer">Rimuovi</button>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </li>
+                                                                        </template>
+                                                                    </ul>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="border-t border-gray-200 px-4 py-6 sm:px-6">
+                                                            <div class="flex justify-between text-base font-medium text-gray-900">
+                                                                <p>Totale prodotti</p>
+                                                                <p x-text="'€' + total.toFixed(2)"></p>
+                                                            </div>
+                                                            <p class="mt-0.5 text-sm text-gray-500">Spedizione calcolata al checkout.</p>
+                                                            <div class="mt-6">
+                                                                <a href="/Cart/GetCart" class="flex items-center justify-center rounded-md border border-transparent bg-[#38679D] px-6 py-3 text-base font-medium shadow-xs hover:bg-[#38679D]/110" style="color: white">Checkout</a>
+                                                            </div>
+                                                            <div class="mt-6 flex justify-center text-center text-sm text-gray-500">
+                                                                <p>
+                                                                    oppure
+                                                                    <button type="button" class="font-medium text-[#38679D] hover:text-[#38679D]/90 cursor-pointer" x-on:click="isOpen = !isOpen">
+                                                                        Continua shopping
+                                                                        <span aria-hidden="true"> &rarr;</span>
+                                                                    </button>
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <div x-data="{ dropdownDashOpen: false }"
+                                     x-on:click.outside="dropdownDashOpen = false"
+                                     class="relative inline-block text-left">
+                                    <button x-on:click="dropdownDashOpen = !dropdownDashOpen"
+                                            class="flex items-center nav-link tm-nav-link px-4 py-[5px] cursor-pointer">
+                                        Dashboard
+                                        <span class="pl-4">
+                                            <svg width="20"
+                                                 height="20"
+                                                 viewBox="0 0 20 20"
+                                                 fill="none"
+                                                 xmlns="http://www.w3.org/2000/svg"
+                                                 class="fill-current">
+                                                <path d="M10 14.25C9.8125 14.25 9.65625 14.1875 9.5 14.0625L2.3125 7C2.03125 6.71875 2.03125 6.28125 2.3125 6C2.59375 5.71875 3.03125 5.71875 3.3125 6L10 12.5312L16.6875 5.9375C16.9688 5.65625 17.4063 5.65625 17.6875 5.9375C17.9687 6.21875 17.9687 6.65625 17.6875 6.9375L10.5 14C10.3437 14.1563 10.1875 14.25 10 14.25Z" />
+                                            </svg>
+                                        </span>
+                                    </button>
+                                    <div :class="dropdownDashOpen ? 'top-full opacity-100 visible' : 'top-[110%] invisible opacity-0' "
+                                         x-cloak
+                                         class="shadow dark:shadow-box-dark absolute left-0 z-40 mt-2 whitespace-nowrap min-w-full rounded-md bg-white dark:bg-dark py-[10px] transition-all">
+                                        <a class="hover:bg-[#F5F7FD] dark:hover:bg-primary/5 hover:text-white block px-5 py-2 text-base text-nowrap" href="/Admin/Dashboard">Lista Ordini</a>
+                                        <a class="hover:bg-[#F5F7FD] dark:hover:bg-primary/5 hover:text-white block px-5 py-2 text-base text-nowrap" href="/Admin/Statistics">Statistiche Ordini</a>
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link tm-nav-link py-2 px-4" href="/Admin/UserList">Utenti</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link tm-nav-link py-2 px-4" href="/Admin/PartnerList">Partner Aziendali</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link tm-nav-link py-2 px-4" href="/Admin/ProductList">Prodotti</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link tm-nav-link py-2 px-4" href="/Admin/ArticleList">Articoli Blog</a>
+                            </li>
+                            <li class="nav-item">
+                                <form action="/Auth/Logout" method="post" style="display:inline;">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="nav-link tm-nav-link py-2 px-4 cursor-pointer">
+                                        <i class="fa-solid fa-right-from-bracket"></i>
+                                    </button>
+                                </form>
+                            </li>
+                        }
+                        <li class="nav-item">
+                            <div id="google_translate_element" class="hidden"></div>
+                            <div x-data="
+                                      {
+                                      dropdownTranslateOpen: false
+                                      }
+                                "
+                                 x-on:click.outside="dropdownTranslateOpen = false"
+                                 class="relative inline-block text-left">
+                                <button x-on:click="dropdownTranslateOpen = !dropdownTranslateOpen"
+                                        class="flex items-center nav-link tm-nav-link px-4 py-[9px] cursor-pointer" id="custom-translate-btn">
+                                    <i class="fa-solid fa-globe"></i>
+                                    <span class="pl-4">
+                                        <svg width="20"
+                                             height="20"
+                                             viewBox="0 0 20 20"
+                                             fill="none"
+                                             xmlns="http://www.w3.org/2000/svg"
+                                             class="fill-current">
+                                            <path d="M10 14.25C9.8125 14.25 9.65625 14.1875 9.5 14.0625L2.3125 7C2.03125 6.71875 2.03125 6.28125 2.3125 6C2.59375 5.71875 3.03125 5.71875 3.3125 6L10 12.5312L16.6875 5.9375C16.9688 5.65625 17.4063 5.65625 17.6875 5.9375C17.9687 6.21875 17.9687 6.65625 17.6875 6.9375L10.5 14C10.3437 14.1563 10.1875 14.25 10 14.25Z" />
+                                        </svg>
+                                    </span>
+                                </button>
+                                <div :class="dropdownTranslateOpen ? 'top-full opacity-100 visible' : 'top-[110%] invisible opacity-0' "
+                                     x-cloak
+                                     class="shadow dark:shadow-box-dark absolute left-0 z-40 mt-2 w-full rounded-md bg-white dark:bg-dark py-[10px] transition-all">
+                                    <a class="hover:bg-[#F5F7FD] dark:hover:bg-primary/5 hover:text-white block px-5 py-2 text-base notranslate cursor-pointer" onclick="setLanguage('en')">ENG</a>
+                                    <a class="hover:bg-[#F5F7FD] dark:hover:bg-primary/5 hover:text-white block px-5 py-2 text-base notranslate cursor-pointer" onclick="setLanguage('fr')">FRA</a>
+                                    <a class="hover:bg-[#F5F7FD] dark:hover:bg-primary/5 hover:text-white block px-5 py-2 text-base notranslate cursor-pointer" onclick="setLanguage('it')">ITA</a>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container-fluid p-0">
+        <main role="main">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="main-footer bg-[left_0] md:bg-center">
+        @if (!User.IsInRole("Admin"))
+        {
+            <div class="w-4/5 mx-auto">
+                <div class="footer-content">
+                    <div class="grid grid-cols-12 gap-4">
+                        <div class="col-span-12 lg:col-span-4 footer-column">
+                            <div class="logo-widget footer-widget text-center lg:text-start">
+                                <div class="flex items-center justify-around lg:justify-start lg:gap-5">
+                                    <img src="/Content/img/logo.png" class="w-15 mb-[25px] hidden md:block" alt="logo" />
+                                    <h2 class="logo-box text-5xl font-bold text-[#38679D]">
+                                        FloreMoria
+                                    </h2>
+                                    <img src="/Content/img/madeinitaly2.png" class="w-27 mb-[25px] hidden md:block" alt="made in italy" />
+                                </div>
+                                <div class="flex justify-center gap-5 w-full items-center md:hidden">
+                                    <img src="/Content/img/logo.png" class="w-15 mb-[25px]" alt="logo" />
+                                    <img src="/Content/img/madeinitaly2.png" class="w-27 mb-[25px]" alt="made in italy" />
+                                </div>
+                                <div class="text">
+                                    <p>Con la bellezza dei fiori, onoriamo i ricordi di chi ci ha lasciato. Un gesto di amore e rispetto, ovunque riposino i vostri cari.</p>
+                                </div>
+                                <ul class="footer-social">
+                                    <li><a href="https://www.instagram.com/app_floremoria/" target="_blank"><i class="fab fa-instagram"></i></a></li>
+                                    <li><a href="https://www.facebook.com/FloreMoriaFioriDellaMemoria/" target="_blank"><i class="fab fa-facebook-f"></i></a></li>
+                                    @{
+                                        var urlTiktok = "https://www.tiktok.com/@floremoria";
+                                        var urlYT = "https://www.youtube.com/@FloreMoria";
+                                        <li><a href="@urlTiktok" target="_blank"><i class="fab fa-tiktok"></i></a></li>
+                                        <li><a href="@urlYT" target="_blank"><i class="fab fa-youtube"></i></a></li>
+                                    }
+                                    <li><a href="https://www.linkedin.com/in/floremoria/" target="_blank"><i class="fab fa-linkedin" target="_blank"></i></a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-span-12 lg:col-span-4 lg:ms-[10em] footer-column text-center md:text-start mt-7 lg:mt-0">
+                            <div class="service-widget footer-widget">
+                                <div class="footer-title text-center lg:text-start">Servizi</div>
+                                <ul class="flex flex-wrap gap-4 lg:flex-col lg:flex-nowrap lg:gap-0 justify-center lg:justify-start">
+                                    <li><a href="/Home/Index#gallery">Prodotti</a></li>
+                                    <li><a href="/Home/Blog">Blog</a></li>
+                                    <li><a href="/Home/FAQ">FAQ</a></li>
+                                    <li><a href="/Home/Partner">Partnership</a></li>
+                                    <li><a href="/Home/Agency">Agenzie</a></li>
+                                    <li><a href="/Home/Investor">Diventa socio</a></li>
+                                    <li><a href="/Auth/Login">Area personale</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-span-12 lg:col-span-4 footer-widget text-center lg:text-start">
+                            <div class="contact-widget footer-widget m-0 lg:ms-[90px]">
+                                <div class="footer-title">Contatti</div>
+                                <div class="text">
+                                    <p>
+                                        Floremoria s.r.l.
+                                        <br />Via Bellinzona 82/B, 22100 Como (CO)
+                                    </p>
+                                    <p class="md:hidden">WhatsApp: <a href="https://wa.me/393204105305">+39 320 410 5305</a></p>
+                                    <p class="hidden md:block">WhatsApp: +39 320 410 5305</p>
+                                    <p><a href="mailto:assistenza@floremoria.eu" class="text-[#FFFAFA]">assistenza@floremoria.eu</a></p>
+                                    <p><a href="mailto:floremoria@pec.it" class="text-[#FFFAFA]">floremoria@pec.it</a></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="h-20 w-full bg-gray-700 p-5">
+                <h2 class="logo-box text-5xl font-bold text-white text-center">
+                    FloreMoria
+                </h2>
+            </div>
+        }
+    </footer>
+    <!-- main-footer end -->
+    <div class="footer-bottom">
+        <div class="w-4/5 mx-auto">
+            <div class="flex flex-col gap-3 md:flex-row">
+                <div class="md:w-1/4 w-full column text-center md:text-start">
+                    <div class="copyright">Copyright &copy; @DateTime.Now.Year - FloreMoria</div>
+                </div>
+                <div class="md:w-1/2 w-full column text-center">
+                    <p class="text-base text-center text-white/70">Azienda certificata nel Registro imprese come startup innovativa</p>
+                </div>
+                <div class="md:w-1/4 w-full column text-center md:text-end">
+                    <ul class="footer-nav flex gap-3 justify-center md:justify-end">
+                        <li>
+                            <a href="https://www.iubenda.com/privacy-policy/18394932" class="iubenda-white iubenda-noiframe iubenda-embed iubenda-noiframe " title="Privacy Policy ">Privacy Policy</a>
+                            <script type="text/javascript">(function (w, d) { var loader = function () { var s = d.createElement("script"), tag = d.getElementsByTagName("script")[0]; s.src = "https://cdn.iubenda.com/iubenda.js"; tag.parentNode.insertBefore(s, tag); }; if (w.addEventListener) { w.addEventListener("load", loader, false); } else if (w.attachEvent) { w.attachEvent("onload", loader); } else { w.onload = loader; } })(window, document);</script>
+                        </li>
+                        <li>
+                            <a href="https://www.iubenda.com/privacy-policy/18394932/cookie-policy" class="iubenda-white iubenda-noiframe iubenda-embed iubenda-noiframe " title="Cookie Policy ">Cookie Policy</a>
+                            <script type="text/javascript">(function (w, d) { var loader = function () { var s = d.createElement("script"), tag = d.getElementsByTagName("script")[0]; s.src = "https://cdn.iubenda.com/iubenda.js"; tag.parentNode.insertBefore(s, tag); }; if (w.addEventListener) { w.addEventListener("load", loader, false); } else if (w.attachEvent) { w.attachEvent("onload", loader); } else { w.onload = loader; } })(window, document);</script>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="flex flex-col gap-3 md:flex-row md:justify-between md:items-center mt-7 text-base">
+                <span class="text-sm text-white/70 leading-[1em] text-center md:text-start">
+                    P.IVA, C.F. e Iscrizione RI 04188260139 | Numero REA CO - 426383 | Capitale sociale sottoscritto: 10.000€ i.v.
+                </span>
+                <span class="text-center md:text-end">Powered by - <a href="https://www.fiveinnovationhub.com" class="hover:text-[#38679D]/90" target="_blank">Five Innovation Hub</a></span>
+            </div>
+        </div>
+    </div>
+    <script src="~/Scripts/jquery-3.7.0.min.js"></script>
+    <script src="~/Scripts/bootstrap.bundle.min.js"></script>
+    <script src="~/Scripts/site.js" asp-append-version="true"></script>
+    <script src="~/Scripts/slick.min.js"></script>
+    <script src="~/Scripts/jquery.magnific-popup.min.js"></script>
+    <script src="~/Scripts/easing.min.js"></script>
+    <script src="~/Scripts/jquery.singlePageNav.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script>
+        function getOffSet() {
+            var _offset = 450;
+            var windowHeight = window.innerHeight;
+
+            if (windowHeight > 500) {
+                _offset = 200;
+            }
+            if (windowHeight > 680) {
+                _offset = 200
+            }
+            if (windowHeight > 830) {
+                _offset = 200;
+            }
+
+            return _offset;
+        }
+
+        function setParallaxPosition($doc, multiplier, $object) {
+            var offset = getOffSet();
+            var from_top = $doc.scrollTop(),
+                bg_css = 'center ' + (multiplier * from_top - offset) + 'px';
+            $object.css({ "background-position": bg_css });
+        }
+
+        // Parallax function
+        var background_image_parallax = function ($object, multiplier, forceSet) {
+            multiplier = typeof multiplier !== 'undefined' ? multiplier : 0.5;
+            multiplier = 1 - multiplier;
+            var $doc = $(document);
+
+            if (forceSet) {
+                setParallaxPosition($doc, multiplier, $object);
+            } else {
+                $(window).scroll(function () {
+                    setParallaxPosition($doc, multiplier, $object);
+                });
+            }
+        };
+
+        var background_image_parallax_2 = function ($object, multiplier) {
+            multiplier = typeof multiplier !== 'undefined' ? multiplier : 0.5;
+            multiplier = 1 - multiplier;
+            var $doc = $(document);
+            $object.css({ "background-attachment": "fixed" });
+
+            $(window).scroll(function () {
+                if ($(window).width() > 768) {
+                    var firstTop = $object.offset().top,
+                        pos = $(window).scrollTop(),
+                        yPos = Math.round((multiplier * (firstTop - pos)) - 186);
+
+                    var bg_css = 'center ' + yPos + 'px';
+
+                    $object.css({ "background-position": bg_css });
+                } else {
+                    $object.css({ "background-position": "center" });
+                }
+            });
+        };
+
+        $(function () {
+            // Hero Section - Background Parallax
+            if ($(".tm-parallax").length)
+                background_image_parallax($(".tm-parallax"), 0.30, false);
+            if ($("#contact").length)
+                background_image_parallax_2($("#contact"), 0.80);
+            if ($("#testimonials").length)
+                background_image_parallax_2($("#testimonials"), 0.80);
+
+            // Handle window resize
+            window.addEventListener('resize', function () {
+                background_image_parallax($(".tm-parallax"), 0.30, true);
+            }, true);
+
+            // Detect window scroll and update navbar
+            $(window).scroll(function (e) {
+                if ($(document).scrollTop() > 70) {
+                    $('.tm-navbar').addClass("scroll");
+                } else {
+                    $('.tm-navbar').removeClass("scroll");
+                }
+            });
+
+            // Close mobile menu after click
+            $('#tmNav a').on('click', function () {
+                $('.navbar-collapse').removeClass('show');
+            })
+
+            $('#tmNav a[href^="#"]').on('click', function (event) {
+                event.preventDefault();
+                var target = $(this.hash);
+                if (target.length) {
+                    $('html, body').animate({
+                        scrollTop: target.offset().top
+                    }, 600, 'easeInOutExpo');
+                }
+            });
+
+            $("a").on('click', function (event) {
+                if (this.hash !== "") {
+                    event.preventDefault();
+                    const hash = this.hash;
+                    const targetPage = this.pathname;
+
+                    // Se siamo già nella pagina corretta
+                    if (window.location.pathname === targetPage) {
+                        scrollToSection(hash);
+                    }
+                    // Se dobbiamo cambiare pagina
+                    else {
+                        window.location.href = targetPage + hash;
+
+                        // Dopo il caricamento della nuova pagina
+                        $(document).one('ready', function () {
+                            if ($(hash).length) {
+                                scrollToSection(hash);
+                            }
+                        });
+                    }
+                }
+            });
+
+            function scrollToSection(hash) {
+                if ($(hash).length) {
+                    const offset = 70;
+                    $('html, body').animate({
+                        scrollTop: $(hash).offset().top - offset
+                    }, 600, 'easeInOutExpo');
+                }
+            }
+
+            // Scroll automatico al caricamento della pagina se c'è un hash nell'URL
+            $(document).ready(function () {
+                if (window.location.hash) {
+                    const hash = window.location.hash;
+                    setTimeout(() => { // Piccolo delay per il rendering
+                        scrollToSection(hash);
+                    }, 100);
+                }
+            });
+
+            $('.tm-testimonials-carousel').slick({
+                dots: true,
+                prevArrow: false,
+                nextArrow: false,
+                infinite: false,
+                slidesToShow: 3,
+                slidesToScroll: 1,
+                responsive: [
+                    {
+                        breakpoint: 992,
+                        settings: {
+                            slidesToShow: 2
+                        }
+                    },
+                    {
+                        breakpoint: 768,
+                        settings: {
+                            slidesToShow: 2
+                        }
+                    },
+                    {
+                        breakpoint: 480,
+                        settings: {
+                            slidesToShow: 1
+                        }
+                    }
+                ]
+            });
+
+            // Gallery
+            $('.tm-gallery').slick({
+                infinite: false,
+                slidesToShow: 5,
+                slidesToScroll: 2,
+                responsive: [
+                    {
+                        breakpoint: 1199,
+                        settings: {
+                            slidesToShow: 4,
+                            slidesToScroll: 2,
+                            dots: true
+                        }
+                    },
+                    {
+                        breakpoint: 991,
+                        settings: {
+                            slidesToShow: 3,
+                            slidesToScroll: 2,
+                            dots: true
+                        }
+                    },
+                    {
+                        breakpoint: 767,
+                        settings: {
+                            slidesToShow: 2,
+                            slidesToScroll: 1,
+                            dots: true
+                        }
+                    },
+                    {
+                        breakpoint: 480,
+                        settings: {
+                            slidesToShow: 1.2,
+                            slidesToScroll: 1,
+                            dots: true
+                        }
+                    }
+                ]
+            });
+        });
+
+        function cart() {
+            return {
+                isOpen: false,
+                items: [],
+                total: 0,
+                initCart() {
+                    this.fetchCartItems();
+                },
+                fetchCartItems() {
+                    fetch('/Cart/GetCartItems')
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log(data.items);
+                            this.items = data.items;
+                            this.total = data.total;
+                        });
+                },
+
+                removeItem(id) {
+                    fetch(`/Cart/RemoveItem/${id}`, { method: 'POST' })
+                        .then(() => this.fetchCartItems());
+                },
+
+                less(id) {
+                    fetch(`/Cart/Less/${id}`, { method: 'POST' })
+                        .then(() => this.fetchCartItems());
+                },
+
+                more(id) {
+                    fetch(`/Cart/More/${id}`, { method: 'POST' })
+                        .then(() => this.fetchCartItems());
+                }
+            }
+        }
+    </script>
+    <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
+    <script defer>
+        document.addEventListener('DOMContentLoaded', () => {
+            const editorContainer = document.getElementById('editor-container');
+
+            // Esce se l'elemento non esiste
+            if (!editorContainer) return;
+
+            const quill = new Quill(editorContainer, {
+                theme: 'snow',
+                modules: {
+                    toolbar: [
+                        ['bold', 'italic', 'underline'],
+                        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                        ['link']
+                    ]
+                }
+            });
+
+            const hiddenTextarea = document.getElementById('hiddenTextarea');
+            if (hiddenTextarea) {
+                quill.root.innerHTML = hiddenTextarea.value || '';
+
+                quill.on('text-change', () => {
+                    hiddenTextarea.value = quill.root.innerHTML;
+                });
+            }
+        });
+    </script>
+    <script defer>
+        function setLanguage(lang) {
+            var sourceLang = 'it';
+            var paths = ['/', window.location.pathname];
+            var domains = [
+                undefined,
+                window.location.hostname,
+                '.' + window.location.hostname.replace(/^www\./, ''),
+                'www.' + window.location.hostname.replace(/^www\./, ''),
+                '.www.' + window.location.hostname.replace(/^www\./, '')
+            ];
+
+            paths.forEach(function (path) {
+                domains.forEach(function (domain) {
+                    var cookie = "googtrans=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=" + path + ";";
+                    if (domain) cookie += "domain=" + domain + ";";
+                    cookie += "SameSite=None;Secure";
+                    document.cookie = cookie;
+                });
+            });
+
+            if (lang !== sourceLang) {
+                document.cookie = "googtrans=/" + sourceLang + "/" + lang + ";path=/;SameSite=None;Secure";
+            }
+            location.reload();
+        }
+    </script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        AOS.init();
+    </script>
+    <script type="text/javascript">
+        var _iub = _iub || [];
+        _iub.csConfiguration = { "siteId": 4015938, "cookiePolicyId": 18394932, "lang": "it", "storage": { "useSiteId": true } };
+    </script>
+    <script type="text/javascript" src="https://cs.iubenda.com/autoblocking/4015938.js"></script>
+    <script type="text/javascript" src="//cdn.iubenda.com/cs/iubenda_cs.js" charset="UTF-8" async></script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

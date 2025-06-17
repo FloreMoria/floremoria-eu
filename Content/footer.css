@@ -1,0 +1,182 @@
+﻿.main-footer {
+    position: relative;
+    overflow: hidden;
+    background: url(https://images.unsplash.com/photo-1497293041652-6e0f18e4f9a4?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.footer-content {
+    position: relative;
+    padding: 85px 0px 80px 0px;
+}
+
+
+    .main-footer:after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.6); /* Colore bianco semi-trasparente */
+        pointer-events: none; /* Permette di cliccare attraverso il velo */
+    }
+
+.footer-content .logo-widget {
+    position: relative;
+    margin-top: -5px;
+    z-index: 10;
+}
+
+        .footer-content .logo-widget .footer-social li {
+            position: relative;
+            display: inline-block;
+            margin-right: 9px;
+        }
+
+            .footer-content .logo-widget .footer-social li:last-child {
+                margin-right: 0px;
+            }
+
+            .footer-content .logo-widget .footer-social li a {
+                position: relative;
+                display: inline-block;
+                width: 42px;
+                height: 42px;
+                line-height: 42px;
+                background: #2e3138;
+                color: #9ea0a9;
+                text-align: center;
+                border-radius: 50%;
+            }
+
+                .footer-content .logo-widget .footer-social li a:hover {
+                    color: #ffffff;
+                    background: #38B;
+                }
+
+        .footer-content .logo-widget .logo-box {
+            margin-bottom: 25px;
+        }
+
+    .footer-content .logo-widget .text p {
+        color: #FFFAFA;
+        margin-bottom: 32px;
+    }
+
+    .footer-content .footer-title {
+        position: relative;
+        font-size: 24px;
+        line-height: 35px;
+        color: #ffffff;
+        font-weight: 700;
+        margin-bottom: 27px;
+    }
+
+.service-widget {
+    position: relative;
+    z-index: 10;
+}
+
+    .footer-content .service-widget li {
+        display: block;
+        margin-bottom: 12px;
+    }
+
+        .footer-content .service-widget li a {
+            position: relative;
+            display: inline-block;
+            color: #FFFAFA;
+        }
+
+            .footer-content .service-widget li a:hover {
+                color: #38B;
+            }
+
+.footer-content .contact-widget p {
+    color: #FFFAFA;
+    margin-bottom: 15px;
+}
+
+    .footer-content .contact-widget {
+        position: relative;
+        z-index: 10;
+    }
+
+        .footer-content .contact-widget .footer-title {
+            margin-bottom: 29px;
+        }
+
+/** footer-bottom **/
+
+.footer-bottom {
+    position: relative;
+    background: #13151a;
+    padding: 25px 0px 22px 0px;
+}
+
+    .footer-bottom .copyright,
+    .footer-bottom .copyright a,
+    .footer-bottom .footer-nav li a {
+        position: relative;
+        color: #FFFAFA;
+    }
+
+        .footer-bottom .copyright a:hover,
+        .footer-bottom .footer-nav li a:hover {
+            color: #38B;
+        }
+
+    .footer-bottom .footer-nav {
+        position: relative;
+    }
+
+        .footer-bottom .footer-nav li {
+            position: relative;
+            display: inline-block;
+        }
+
+            .footer-bottom .footer-nav li:first-child {
+                margin-left: 0px;
+            }
+
+            .footer-bottom .footer-nav li:before {
+                position: absolute;
+                content: '';
+                background: #9ea0a9;
+                width: 1px;
+                height: 14px;
+                top: 7px;
+                left: -18px;
+            }
+
+            .footer-bottom .footer-nav li:first-child:before {
+                display: none;
+            }
+
+.logo-box img {
+    max-width: 220px;
+}
+
+footer a, footer a:hover, footer a:focus, footer a:active {
+    text-decoration: none;
+    outline: none;
+}
+
+footer ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+footer a:hover {
+    color: #38B;
+}
+
+@media (min-width:991px){
+    .main-footer {
+        background-position-y: -10em;
+    }
+}

@@ -1,0 +1,503 @@
+﻿@model Floremoria.Models.ApplicationUser
+
+@{
+    ViewBag.Title = "Profilo_Partner";
+    var prodotti = ViewBag.Prodotti as List<FloreMoria.Models.Prodotto>;
+
+    // Calcoli per statistiche esistenti
+    var ordiniPartner = Model.Ordine.Where(o => o.DaPartner).ToList();
+    var ultimoOrdine = ordiniPartner.OrderByDescending(x => x.DataOrdine).FirstOrDefault();
+
+    // Calcolo media giorni tra ordini
+    var mediaGiorni = 0;
+    if (ordiniPartner.Count > 1)
+    {
+        var ordiniOrdinati = ordiniPartner.OrderBy(o => o.DataOrdine).ToList();
+        var intervalli = new List<int>();
+        for (int i = 1; i < ordiniOrdinati.Count; i++)
+        {
+            intervalli.Add((ordiniOrdinati[i].DataOrdine - ordiniOrdinati[i - 1].DataOrdine).Days);
+        }
+        mediaGiorni = intervalli.Count > 0 ? (int)intervalli.Average() : 0;
+    }
+
+    // Calcoli per dashboard
+    var currentYear = DateTime.Now.Year;
+    var ordiniAnnoCorrente = ordiniPartner.Where(o => o.DataOrdine.Year == currentYear).ToList();
+
+    var fatturatTotaleAnno = ordiniAnnoCorrente.Sum(o => o.Totale);
+    var numeroOrdiniAnno = ordiniAnnoCorrente.Count;
+    var mediaMensile = numeroOrdiniAnno > 0 ? fatturatTotaleAnno / 12 : 0;
+    var mediaOrdine = numeroOrdiniAnno > 0 ? fatturatTotaleAnno / numeroOrdiniAnno : 0;
+
+    Func<decimal, decimal, decimal> CalcolaFeeArrotondata = (prezzo, percentuale) =>
+    {
+        var feeEsatta = prezzo * percentuale / 100;
+        var parteDecimale = feeEsatta - Math.Floor(feeEsatta);
+
+        if (parteDecimale >= 0.5m)
+        {
+            return Math.Ceiling(feeEsatta); // Arrotonda per eccesso se >= 0.5
+        }
+        else
+        {
+            return Math.Floor(feeEsatta); // Arrotonda per difetto se < 0.5
+        }
+    };
+
+    // Calcolo fee solo per prodotti categoria 3
+    var percentualeFee = Model.PercentualeReferral;
+    var feeAnno = ordiniAnnoCorrente
+        .SelectMany(o => o.Dettaglio)
+        .Where(d => d.Prodotto.Categoria == FloreMoria.Enums.Categoria.Lutto)
+        .Sum(d => CalcolaFeeArrotondata(d.Prezzo, percentualeFee.Value) * d.Quantita);
+
+    var feeMensile = feeAnno / 12;
+
+    // Fatturato solo categoria 3 (per confronto)
+    var fatturatCategoria3Anno = ordiniAnnoCorrente
+        .SelectMany(o => o.Dettaglio)
+        .Where(d => d.Prodotto.Categoria == FloreMoria.Enums.Categoria.Lutto)
+        .Sum(d => d.Prezzo * d.Quantita);
+
+    // Dati mensili
+    var mesi = new[] { "Gen", "Feb", "Mar", "Apr", "Mag", "Giu", "Lug", "Ago", "Set", "Ott", "Nov", "Dic" };
+    var datiMensili = Enumerable.Range(1, 12).Select(mese => new
+    {
+        Nome = mesi[mese - 1],
+        NumeroMese = mese,
+        NomeCompleto = System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(mese),
+        Valore = ordiniAnnoCorrente.Where(o => o.DataOrdine.Month == mese).Sum(o => o.Totale),
+        NumeroOrdini = ordiniAnnoCorrente.Where(o => o.DataOrdine.Month == mese).Count()
+    }).ToList();
+
+    // Top 5 prodotti venduti
+    var topProdotti = ordiniPartner
+        .SelectMany(o => o.Dettaglio)
+        .GroupBy(d => new { d.ProdottoId, d.Prodotto.Nome })
+        .Select(g => new
+        {
+            Nome = g.Key.Nome ?? "Prodotto sconosciuto",
+            Quantita = g.Sum(d => d.Quantita),
+            Ricavo = g.Sum(d => d.Prezzo * d.Quantita)
+        })
+        .OrderByDescending(x => x.Quantita)
+        .Take(5)
+        .ToList();
+}
+
+<style>
+    .great-vibes {
+        font-family: "Great Vibes", serif;
+        font-weight: 400;
+        font-style: normal;
+    }
+
+    .navbar .navbar-brand,
+    .navbar .nav-link {
+        color: #369;
+    }
+
+        .navbar .nav-link:hover {
+            color: white;
+        }
+
+    input::placeholder, textarea::placeholder {
+        color: gray;
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="bg-gray-100 pt-24 sm:pt-32">
+    <div class="mx-auto max-w-2xl px-6 lg:max-w-7xl lg:px-8">
+        <h2 class="text-center text-lg font-semibold text-[#38679D]">Profilo Partner</h2>
+        <p class="mx-auto mt-2 max-w-5xl text-center text-4xl font-semibold tracking-tight text-balance text-gray-950 sm:text-5xl">Qui troverai info e statistiche sugli ordini collegati a questo profilo</p>
+        <div class="mt-10 grid gap-4 sm:mt-16 lg:grid-cols-2 lg:grid-rows-2">
+            <div class="relative lg:row-span-2">
+                <div class="absolute inset-px max-lg:rounded-t-4xl bg-white lg:rounded-l-4xl"></div>
+                <div class="relative flex h-full flex-col overflow-hidden max-lg:rounded-t-4xl lg:rounded-l-[calc(2rem+1px)]">
+                    <div class="px-8 pt-8 pb-3 sm:px-10 sm:pt-10 sm:pb-0">
+                        <p class="mt-2 text-lg font-medium tracking-tight text-gray-950 max-lg:text-center">Info personali</p>
+                        <p class="mt-2 max-w-lg text-sm/6 text-gray-600 max-lg:text-center">Questi sono i dati di fatturazione aziendale</p>
+                    </div>
+                    <div class="flex-1 items-center justify-center px-8 max-lg:pt-10 max-lg:pb-12 sm:px-10 lg:pb-2 mt-5">
+                        <p class="mt-2 max-w-lg text-base text-gray-600 max-lg:text-center"><b>Rag. Sociale:</b> @Model.RagioneSociale</p>
+                        <p class="mt-2 max-w-lg text-base text-gray-600 max-lg:text-center"><b>Indirizzo:</b> @Model.Indirizzo, @Model.CAP, @Model.Città (@Model.Provincia)</p>
+                        <p class="mt-2 max-w-lg text-base text-gray-600 max-lg:text-center"><b>P.Iva:</b> @Model.PartitaIVA</p>
+                        <p class="mt-2 max-w-lg text-base text-gray-600 max-lg:text-center"><b>SDI:</b> @Model.SDI</p>
+                        <p class="mt-2 max-w-lg text-base text-gray-600 max-lg:text-center"><b>Telefono:</b> @Model.PhoneNumber</p>
+                        <p class="mt-2 max-w-lg text-base text-gray-600 max-lg:text-center"><b>Email:</b> @Model.Email</p>
+                    </div>
+                    <div class="px-8 pt-8 pb-3 sm:px-10 sm:pt-10 sm:pb-7">
+                        <img src="https://img.icons8.com/?size=150&id=-1hab-8knF-2&format=png&color=000000" class="justify-self-end" alt="Alternate Text" />
+                    </div>
+                </div>
+                <div class="pointer-events-none absolute inset-px max-lg:rounded-t-4xl shadow-sm ring-1 ring-black/5 lg:rounded-l-4xl"></div>
+            </div>
+            <div class="relative">
+                <div class="absolute inset-px rounded-lg bg-white lg:rounded-tr-4xl lg:rounded-l-none"></div>
+                <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] lg:rounded-tr-4xl lg:rounded-l-none">
+                    <div class="px-8 pt-8 sm:px-10 sm:pt-10">
+                        <p class="mt-2 text-lg font-medium tracking-tight text-gray-950 max-lg:text-center">Statistiche</p>
+                        <p class="mt-2 max-w-lg text-sm/6 text-gray-600 max-lg:text-center">La media ordini è ogni:</p>
+                    </div>
+                    <div class="flex flex-1 items-center justify-center px-8 max-lg:pt-10 max-lg:pb-12 sm:px-10 lg:pb-2">
+                        @if (ordiniPartner.Any())
+                        {
+                            if (mediaGiorni > 0)
+                            {
+                                <h3 class="font-bold text-2xl max-lg:text-center">@mediaGiorni giorni</h3>
+                            }
+                            else
+                            {
+                                <h3 class="font-bold text-2xl max-lg:text-center">Primo ordine</h3>
+                            }
+                        }
+                        else
+                        {
+                            <h3 class="font-bold text-2xl max-lg:text-center">Non ci sono ancora ordini effettuati.</h3>
+                        }
+                    </div>
+                </div>
+                <div class="pointer-events-none absolute inset-px rounded-lg shadow-sm ring-1 ring-black/5 lg:rounded-tr-4xl lg:rounded-l-none"></div>
+            </div>
+
+            <div class="relative max-lg:row-start-3 lg:col-start-2 lg:row-start-2">
+                <div class="absolute inset-px rounded-lg bg-white lg:rounded-br-4xl lg:rounded-l-none"></div>
+                <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] max-lg:rounded-t-[calc(2rem+1px)] lg:rounded-br-4xl lg:rounded-l-none">
+                    <div class="px-8 pt-8 sm:px-10 sm:pt-10">
+                        <p class="mt-2 text-lg font-medium tracking-tight text-gray-950 max-lg:text-center">Ultimo ordine effettuato</p>
+                        <p class="mt-2 max-w-lg text-sm/6 text-gray-600 max-lg:text-center">L'ultimo ordine risale al giorno:</p>
+                    </div>
+                    <div class="flex flex-1 items-center justify-center px-8 max-lg:pt-10 max-lg:pb-12 sm:px-10 lg:pb-2">
+                        @if (ultimoOrdine != null)
+                        {
+                            <div class="text-center">
+                                <h3 class="font-bold text-2xl max-lg:text-center text-[#38679D]">@ultimoOrdine.DataOrdine.ToString("dd/MM/yyyy")</h3>
+                                <p class="text-sm text-gray-600 mt-1">€ @ultimoOrdine.Totale.ToString("N2")</p>
+                            </div>
+                        }
+                        else
+                        {
+                            <h3 class="font-bold text-2xl max-lg:text-center">Non ci sono ancora ordini effettuati.</h3>
+                        }
+                    </div>
+                </div>
+                <div class="pointer-events-none absolute inset-px rounded-lg shadow-sm ring-1 ring-black/5 lg:rounded-br-4xl lg:rounded-l-none"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@Html.Partial("_Dashboard", Model.Ordine)
+
+<!-- Dashboard Statistiche -->
+<div class="bg-gray-100 py-16">
+    <div class="mx-auto max-w-2xl px-6 lg:max-w-7xl lg:px-8">
+        <h2 class="text-center text-lg font-semibold text-[#38679D]">Dashboard Partner</h2>
+        <p class="mx-auto mt-2 max-w-4xl text-center text-3xl font-semibold tracking-tight text-balance text-gray-950 sm:text-4xl">Statistiche dettagliate degli ordini @currentYear</p>
+
+        <!-- Cards statistiche principali -->
+        <div class="mt-10 grid gap-6 sm:mt-16 lg:grid-cols-4">
+            <!-- Fatturato totale anno -->
+            <div class="relative">
+                <div class="absolute inset-px rounded-lg bg-gradient-to-r from-blue-50 to-indigo-50"></div>
+                <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] p-6">
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="text-sm font-medium text-gray-600">Fatturato @currentYear</h3>
+                        <div class="p-2 bg-blue-100 rounded-lg">
+                            <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <p class="text-2xl font-bold text-gray-900">€ @fatturatTotaleAnno.ToString("N2")</p>
+                    <p class="text-xs text-gray-500 mt-1">@numeroOrdiniAnno ordini totali</p>
+                </div>
+                <div class="pointer-events-none absolute inset-px rounded-lg shadow-sm ring-1 ring-black/5"></div>
+            </div>
+
+            <!-- Media mensile -->
+            <div class="relative">
+                <div class="absolute inset-px rounded-lg bg-gradient-to-r from-green-50 to-emerald-50"></div>
+                <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] p-6">
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="text-sm font-medium text-gray-600">Media Mensile</h3>
+                        <div class="p-2 bg-green-100 rounded-lg">
+                            <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <p class="text-2xl font-bold text-gray-900">€ @mediaMensile.ToString("N2")</p>
+                    <p class="text-xs text-gray-500 mt-1">Fatturato medio mensile</p>
+                </div>
+                <div class="pointer-events-none absolute inset-px rounded-lg shadow-sm ring-1 ring-black/5"></div>
+            </div>
+
+            <!-- Media per ordine -->
+            <div class="relative">
+                <div class="absolute inset-px rounded-lg bg-gradient-to-r from-purple-50 to-violet-50"></div>
+                <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] p-6">
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="text-sm font-medium text-gray-600">Media Ordine</h3>
+                        <div class="p-2 bg-purple-100 rounded-lg">
+                            <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <p class="text-2xl font-bold text-gray-900">€ @mediaOrdine.ToString("N2")</p>
+                    <p class="text-xs text-gray-500 mt-1">Valore medio per ordine</p>
+                </div>
+                <div class="pointer-events-none absolute inset-px rounded-lg shadow-sm ring-1 ring-black/5"></div>
+            </div>
+
+            <!-- Fee mensili -->
+            <div class="relative">
+                <div class="absolute inset-px rounded-lg bg-gradient-to-r from-orange-50 to-red-50"></div>
+                <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] p-6">
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="text-sm font-medium text-gray-600">Fee Mensili</h3>
+                        <div class="p-2 bg-orange-100 rounded-lg">
+                            <svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a3 3 0 00-3 3v6a3 3 0 003 3h14a2 2 0 002-2v-2M9 12h6m-6-4h6m2 5l-3 3m0 0l-3-3m3 3V8"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <p class="text-2xl font-bold text-gray-900">€ @feeMensile.ToString("N2")</p>
+                    <p class="text-xs text-gray-500 mt-1">@percentualeFee% del fatturato</p>
+                </div>
+                <div class="pointer-events-none absolute inset-px rounded-lg shadow-sm ring-1 ring-black/5"></div>
+            </div>
+        </div>
+
+        <!-- Grafici e tabelle -->
+        <div class="mt-10 grid gap-6 lg:grid-cols-2">
+            <!-- Grafico fatturato mensile -->
+            <div class="relative lg:col-span-2">
+                <div class="absolute inset-px rounded-lg bg-white"></div>
+                <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Andamento Fatturato Mensile @currentYear</h3>
+                    <div class="flex-1">
+                        <canvas id="chartFatturatoMensile" class="w-full h-80"></canvas>
+                    </div>
+                </div>
+                <div class="pointer-events-none absolute inset-px rounded-lg shadow-sm ring-1 ring-black/5"></div>
+            </div>
+
+            <!-- Top 5 prodotti -->
+            <div class="relative">
+                <div class="absolute inset-px rounded-lg bg-white"></div>
+                <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Top 5 Prodotti Venduti</h3>
+                    <div class="space-y-4">
+                        @foreach (var prodotto in topProdotti)
+                        {
+                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                <div>
+                                    <p class="font-medium text-gray-900">@prodotto.Nome</p>
+                                    <p class="text-sm text-gray-600">Quantità: @prodotto.Quantita</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="font-semibold text-gray-900">€ @prodotto.Ricavo.ToString("N2")</p>
+                                </div>
+                            </div>
+                        }
+                        @if (!topProdotti.Any())
+                        {
+                            <div class="text-center py-8 text-gray-500">
+                                <p>Nessun prodotto ancora venduto</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="pointer-events-none absolute inset-px rounded-lg shadow-sm ring-1 ring-black/5"></div>
+            </div>
+
+            <!-- Dettaglio fee annuali -->
+            <div class="relative">
+                <div class="absolute inset-px rounded-lg bg-white"></div>
+                <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Riepilogo Fee @currentYear</h3>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
+                            <span class="font-medium text-gray-700">Fatturato Totale</span>
+                            <span class="font-bold text-blue-600">€ @fatturatTotaleAnno.ToString("N2")</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-orange-50 rounded-lg">
+                            <span class="font-medium text-gray-700">Percentuale Fee</span>
+                            <span class="font-bold text-orange-600">@percentualeFee%</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-red-50 rounded-lg">
+                            <span class="font-medium text-gray-700">Fee Totali Anno</span>
+                            <span class="font-bold text-red-600">€ @feeAnno.ToString("N2")</span>
+                        </div>
+                        <div class="flex justify-between items-center p-3 bg-green-50 rounded-lg">
+                            <span class="font-medium text-gray-700">Fee Mensili Medie</span>
+                            <span class="font-bold text-green-600">€ @feeMensile.ToString("N2")</span>
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-gray-200">
+                        <p class="text-xs text-gray-500 text-center">
+                            Le fee vengono calcolate mensilmente sul fatturato dei prodotti di categoria Lutto e Camera Ardente.
+                        </p>
+                    </div>
+                </div>
+                <div class="pointer-events-none absolute inset-px rounded-lg shadow-sm ring-1 ring-black/5"></div>
+            </div>
+        </div>
+
+        <!-- Tabella dettaglio mensile -->
+        <div class="mt-10">
+            <div class="relative">
+                <div class="absolute inset-px rounded-lg bg-white"></div>
+                <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Dettaglio Mensile @currentYear</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mese</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">N° Ordini</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fatturato</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fee (@percentualeFee%)</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Netto Partner</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                @foreach (var mese in datiMensili.Where(m => m.Valore > 0 || m.NumeroOrdini > 0))
+                                {
+                                    var feeMese = ordiniAnnoCorrente
+                                        .Where(o => o.DataOrdine.Month == mese.NumeroMese)
+                                        .SelectMany(o => o.Dettaglio)
+                                        .Where(d => d.Prodotto.Categoria == FloreMoria.Enums.Categoria.Lutto)
+                                        .Sum(d => CalcolaFeeArrotondata(d.Prezzo, percentualeFee.Value) * d.Quantita);
+                                    var nettoPartner = mese.Valore - feeMese;
+
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">@mese.NomeCompleto</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">@mese.NumeroOrdini</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">€ @mese.Valore.ToString("N2")</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600">€ @feeMese.ToString("N2")</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600">€ @nettoPartner.ToString("N2")</td>
+                                    </tr>
+                                }
+                                @if (!datiMensili.Any(m => m.Valore > 0))
+                                {
+                                    <tr>
+                                        <td colspan="5" class="px-6 py-4 text-center text-gray-500">Nessun ordine registrato per l'anno @currentYear</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="pointer-events-none absolute inset-px rounded-lg shadow-sm ring-1 ring-black/5"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Dati per il grafico fatturato mensile
+        const dataFatturato = {
+            labels: [@Html.Raw(string.Join(", ", datiMensili.Select(m => $"'{m.Nome}'")))],
+            datasets: [
+                {
+                    label: 'Fatturato',
+                    backgroundColor: 'rgba(59, 130, 246, 0.6)',
+                    borderColor: 'rgba(59, 130, 246, 1)',
+                    borderWidth: 2,
+                    data: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(datiMensili.Select(m => m.Valore))),
+                    fill: true
+                },
+                {
+                    label: 'N° Ordini',
+                    type: 'line',
+                    backgroundColor: 'rgba(16, 185, 129, 0.6)',
+                    borderColor: 'rgba(16, 185, 129, 1)',
+                    borderWidth: 2,
+                    data: [@string.Join(", ", datiMensili.Select(m => m.NumeroOrdini))],
+                    yAxisID: 'y1',
+                    tension: 0.4
+                }
+            ]
+        };
+
+        // Configurazione grafico fatturato mensile
+        const chartFatturato = new Chart(
+            document.getElementById('chartFatturatoMensile'),
+            {
+                type: 'bar',
+                data: dataFatturato,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '€ ' + value;
+                                }
+                            },
+                            grid: {
+                                borderDash: [2, 4]
+                            }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + ' ord.';
+                                }
+                            },
+                            grid: {
+                                drawOnChartArea: false,
+                            },
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.dataset.label === 'Fatturato') {
+                                        label += '€ ' + context.raw;
+                                    } else {
+                                        label += context.raw + ' ordini';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        );
+    });
+</script>

@@ -1,0 +1,225 @@
+﻿@model FloreMoria.Models.Newsletter
+@using FloreMoria.Helper
+
+@{
+    ViewBag.Title = "Blog";
+    var articoli = ViewData["Articoli"] as List<FloreMoria.Models.ArticoloBlog>;
+    var promo = ViewBag.Promo as List<FloreMoria.Models.Prodotto>;
+    var urlTiktok = "https://www.tiktok.com/@floremoria";
+    var urlYT = "https://www.youtube.com/@FloreMoria";
+}
+
+<style>
+    .great-vibes {
+    font-family: "Great Vibes", serif;
+    font-weight: 400;
+    font-style: normal;
+    }
+
+    .navbar .navbar-brand,
+    .navbar .nav-link {
+    color: #369;
+    }
+
+    .navbar .nav-link:hover {
+    color: white;
+    }
+
+    input::placeholder{
+    color: whitesmoke;
+    }
+
+    .social li a {
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+    background: #2e3138;
+    color: #9ea0a9;
+    text-align: center;
+    border-radius: 50%;
+    }
+
+    .social li a:hover {
+    color: #ffffff;
+    background: #38B;
+    }
+</style>
+
+<div class="p-12 pt-24">
+    <h2 class="text-3xl font-semibold">Benvenuto nel nostro <span class="great-vibes text-4xl font-bold text-[#38679D]">Blog</span></h2>
+    <h3 class="text-2xl">Qui troverai articoli sull'arte del ricordo, storie di commemorazione e consigli per creare momenti significativi.</h3>
+</div>
+<div class="flex flex-col lg:flex-row gap-12 px-12 p-4 relative">
+    <div class="w-full lg:w-2/3 overflow-y-auto h-full">
+        @foreach (var item in articoli)
+        {
+            <div class="w-full">
+                <div class="w-full mb-14">
+                    <div class="mb-8 overflow-hidden rounded">
+                        <img src="@item.Immagine"
+                        alt="image"
+                        class="w-full" />
+                    </div>
+                    <div>
+                        <span class="inline-block px-4 py-1 mb-5 text-xs font-semibold leading-loose text-center text-white rounded bg-[#38679D]">
+                            @(new System.Globalization.CultureInfo("it-IT").TextInfo.ToTitleCase(item.DataCreazione.ToString("dd MMM yyyy", new System.Globalization.CultureInfo("it-IT")).ToLower()))
+                        </span>
+                        <h3>
+                            <a href="/Home/Article/@item.Id"
+                            class="inline-block mb-4 text-xl font-semibold text-dark dark:text-white hover:text-[#38679D] sm:text-2xl lg:text-xl xl:text-2xl">
+                                @item.Titolo
+                            </a>
+                        </h3>
+                        <p class="text-base text-body-color dark:text-dark-6 truncate">
+                            @Html.TruncateHtml(item.Testo,400)
+                        </p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    <div class="w-full lg:w-1/3 sticky top-0 self-start">
+        <div class="p-7 bg-[#38679D] text-center w-full text-white rounded">
+            <h3 class="text-2xl font-bold">
+                Iscriviti alla nostra newsletter!
+            </h3>
+            <p class="my-3">
+                Inserisci la tua email per restare aggiornato sulle nostre novità.
+            </p>
+            <form action="/Home/Subscribe" method="post">
+                <input type="email" name="email" value="@Model.Email" required placeholder="La tua email" class="block w-80 mx-auto text-center p-2 rounded bg-blue-300 outline-white/50" />
+                <button type="submit" class="btn w-80 text-center bg-white rounded mt-3 text-gray-600">Iscritivi ora</button>
+            </form>
+            <p class="mt-3">Non preoccuparti non inviamo spam.</p>
+        </div>
+        <div class="mt-7 text-center">
+            <h2 class="text-xl mb-4">Seguici anche sui nostri social</h2>
+            <ul class="flex gap-4 text-2xl justify-center social">
+                <li><a href="https://www.instagram.com/app_floremoria/" target="_blank"><i class="fab fa-instagram"></i></a></li>
+                <li><a href="https://www.facebook.com/FloreMoriaFioriDellaMemoria/" target="_blank"><i class="fab fa-facebook-f"></i></a></li>
+                <li><a href="@urlTiktok" target="_blank"><i class="fab fa-tiktok"></i></a></li>
+                <li><a href="@urlYT" target="_blank"><i class="fab fa-youtube"></i></a></li>
+                <li><a href="https://www.linkedin.com/in/floremoria/" target="_blank"><i class="fab fa-linkedin" target="_blank"></i></a></li>
+            </ul>
+            <img src="/Content/img/decorazione.png" alt="Alternate Text" class="w-full mt-7 -scale-x-100" />
+        </div>
+        <div class="border-2 p-7 border-gray-300 mt-12 rounded">
+            @if(promo != null && promo.Any())
+            {  
+                <h3 class="border-b-2 border-[#38679D] flex pb-2 mb-5 w-fit">Offerta del mese</h3>
+                foreach (var item in promo)
+                {              
+                    <div class="h-50 bg-[url(https://images.unsplash.com/photo-1607083207685-aaf05f2c908c?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D)] bg-cover bg-center rounded mb-12">
+                        <a href="/Home/Dettaglio/@item.Id"></a>
+                    </div>
+                }
+            }
+            <h3 class="border-b-2 border-[#38679D] flex pb-2 mb-5 w-fit">I nostri partner</h3>
+            <div class="h-150 bg-[url(https://images.unsplash.com/photo-1496115965489-21be7e6e59a0?q=80&w=2574&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D)] bg-cover bg-center rounded">
+            </div>
+        </div>
+    </div>
+    @if (TempData["Message"] != null || TempData["Errore"] != null)
+    {
+        <section class="bg-gray-2 py-[60px] dark:bg-dark fixed bottom-0 right-1 lg:right-5"
+        x-data="{ toastOpen: true, timer: null }"
+        x-init="timer=setTimeout(() =>
+                            {
+                            toastOpen = false;
+                            }, 5000);
+        "
+        x-on:click.away="clearTimeout(timer);
+                            toastOpen = false;
+        "
+        x-on:mouseover="clearTimeout(timer)"
+        x-on:mouseout="timer = setTimeout(() => {
+                            toastOpen = false;
+                            }, 5000);
+        "
+        :class="toastOpen ? 'block' : 'hidden'">
+            <div class="mx-auto px-4 sm:container">
+                <div class="relative flex min-w-[350px] lg:min-w-[450px] items-center rounded-lg border border-gray-200 bg-white p-4 py-[18px] shadow-xl sm:px-[30px] dark:border-dark-3 dark:bg-dark-2 dark:shadow-box-dark">
+                    @if(TempData["Message"] != null)
+                    {                      
+                        <div class="mr-5 flex h-10 w-full max-w-[40px] items-center justify-center rounded-full bg-[#38679D]">
+                            <svg width="24"
+                            height="25"
+                            viewBox="0 0 24 25"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 1.17499C5.7375 1.17499 0.675003 6.23749 0.675003 12.5C0.675003 18.7625 5.7375 23.8625 12 23.8625C18.2625 23.8625 23.3625 18.7625 23.3625 12.5C23.3625 6.23749 18.2625 1.17499 12 1.17499ZM12 22.175C6.675 22.175 2.3625 17.825 2.3625 12.5C2.3625 7.17499 6.675 2.86249 12 2.86249C17.325 2.86249 21.675 7.21249 21.675 12.5375C21.675 17.825 17.325 22.175 12 22.175Z"
+                                fill="white" />
+                                <path d="M15.225 9.01248L10.7625 13.3625L8.7375 11.375C8.4 11.0375 7.875 11.075 7.5375 11.375C7.2 11.7125 7.2375 12.2375 7.5375 12.575L9.9375 14.9C10.1625 15.125 10.4625 15.2375 10.7625 15.2375C11.0625 15.2375 11.3625 15.125 11.5875 14.9L16.425 10.25C16.7625 9.91248 16.7625 9.38748 16.425 9.04998C16.0875 8.71248 15.5625 8.71248 15.225 9.01248Z"
+                                fill="white" />
+                            </svg>
+                        </div>
+                    }
+                    else if(TempData["Errore"] != null)
+                    {                     
+                        <div class="mr-5 flex h-10 w-full max-w-[40px] items-center justify-center rounded-full bg-red-500">
+                            <svg width="24"
+                            height="25"
+                            viewBox="0 0 24 25"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 1.17499C5.7375 1.17499 0.675003 6.23749 0.675003 12.5C0.675003 18.7625 5.7375 23.8625 12 23.8625C18.2625 23.8625 23.3625 18.7625 23.3625 12.5C23.3625 6.23749 18.2625 1.17499 12 1.17499ZM12 22.175C6.675 22.175 2.3625 17.825 2.3625 12.5C2.3625 7.17499 6.675 2.86249 12 2.86249C17.325 2.86249 21.675 7.21249 21.675 12.5375C21.675 17.825 17.325 22.175 12 22.175Z"
+                                fill="white" />
+                                <path d="M15.5625 9.43751C15.3094 9.18439 14.9156 9.18439 14.6625 9.43751L12 12.1L9.3375 9.43751C9.08437 9.18439 8.69062 9.18439 8.4375 9.43751C8.18437 9.69064 8.18437 10.0844 8.4375 10.3375L11.1 13L8.4375 15.6625C8.18437 15.9156 8.18437 16.3094 8.4375 16.5625C8.55 16.675 8.71875 16.7594 8.8875 16.7594C9.05625 16.7594 9.225 16.7031 9.3375 16.5625L12 13.9L14.6625 16.5625C14.775 16.675 14.9437 16.7594 15.1125 16.7594C15.2812 16.7594 15.45 16.7031 15.5625 16.5625C15.8156 16.3094 15.8156 15.9156 15.5625 15.6625L12.9 13L15.5625 10.3375C15.8156 10.0844 15.8156 9.69064 15.5625 9.43751Z"
+                                fill="white" />
+                            </svg>
+                        </div>
+                    }
+                    <div class="flex w-full items-center justify-between">
+                        <div>
+                            @{
+                                var title = TempData["Message"] != null ? "Ottimo" : TempData["Errore"] != null ? "Attenzione" : null;
+                                var message = TempData["Message"] != null ? TempData["Message"] : TempData["Errore"] != null ? TempData["Errore"] : null;
+                                <h6 class="text-base font-semibold text-dark sm:text-lg dark:text-white">
+                                    @title
+                                </h6>
+                                <p class="text-sm text-body-color dark:text-dark-6 text-nowrap">
+                                    @message
+                                </p>
+                            }
+                        </div>
+
+                        <button class="text-dark-5 hover:text-red cursor-pointer" x-on:click="clearTimeout(timer); toastOpen = !toastOpen">
+                            <svg width="18"
+                                 height="18"
+                                 viewBox="0 0 18 18"
+                                 fill="none"
+                                 xmlns="http://www.w3.org/2000/svg"
+                                 class="fill-current">
+                                <path d="M9.9 9.00001L16.7625 2.13751C17.0156 1.88439 17.0156 1.49064 16.7625 1.23751C16.5094 0.984387 16.1156 0.984387 15.8625 1.23751L9 8.10001L2.1375 1.23751C1.88437 0.984387 1.49062 0.984387 1.2375 1.23751C0.984372 1.49064 0.984372 1.88439 1.2375 2.13751L8.1 9.00001L1.2375 15.8625C0.984372 16.1156 0.984372 16.5094 1.2375 16.7625C1.35 16.875 1.51875 16.9594 1.6875 16.9594C1.85625 16.9594 2.025 16.9031 2.1375 16.7625L9 9.90001L15.8625 16.7625C15.975 16.875 16.1437 16.9594 16.3125 16.9594C16.4812 16.9594 16.65 16.9031 16.7625 16.7625C17.0156 16.5094 17.0156 16.1156 16.7625 15.8625L9.9 9.00001Z" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    }
+    <div class="absolute bottom-0 right-0 z-[-1]">
+        <svg width="1440"
+             height="886"
+             viewBox="0 0 1440 886"
+             fill="none"
+             xmlns="http://www.w3.org/2000/svg">
+            <path opacity="0.5"
+                  d="M193.307 -273.321L1480.87 1014.24L1121.85 1373.26C1121.85 1373.26 731.745 983.231 478.513 729.927C225.976 477.317 -165.714 85.6993 -165.714 85.6993L193.307 -273.321Z"
+                  fill="url(#paint0_linear)" />
+            <defs>
+                <linearGradient id="paint0_linear"
+                                x1="1308.65"
+                                y1="1142.58"
+                                x2="602.827"
+                                y2="-418.681"
+                                gradientUnits="userSpaceOnUse">
+                    <stop stop-color="#3056D3" stop-opacity="0.36" />
+                    <stop offset="1" stop-color="#F5F2FD" stop-opacity="0" />
+                    <stop offset="1" stop-color="#F5F2FD" stop-opacity="0.096144" />
+                </linearGradient>
+            </defs>
+        </svg>
+    </div>
+</div>

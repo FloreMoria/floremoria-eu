@@ -1,0 +1,274 @@
+﻿@model Floremoria.Models.ApplicationUser
+
+@{
+    ViewBag.Title = "Profilo";
+    var prodotti = ViewBag.Prodotti as List<FloreMoria.Models.Prodotto>;
+
+    // Calcoli per statistiche esistenti
+    var ordiniPartner = Model.Ordine.Where(o => o.DaPartner).ToList();
+    var ultimoOrdine = ordiniPartner.OrderByDescending(x => x.DataOrdine).FirstOrDefault();
+
+    // Calcolo media giorni tra ordini
+    var mediaGiorni = 0;
+    if (ordiniPartner.Count > 1)
+    {
+        var ordiniOrdinati = ordiniPartner.OrderBy(o => o.DataOrdine).ToList();
+        var intervalli = new List<int>();
+        for (int i = 1; i < ordiniOrdinati.Count; i++)
+        {
+            intervalli.Add((ordiniOrdinati[i].DataOrdine - ordiniOrdinati[i - 1].DataOrdine).Days);
+        }
+        mediaGiorni = intervalli.Count > 0 ? (int)intervalli.Average() : 0;
+    }
+}
+
+<style>
+    .great-vibes {
+        font-family: "Great Vibes", serif;
+        font-weight: 400;
+        font-style: normal;
+    }
+
+    .navbar .navbar-brand,
+    .navbar .nav-link {
+        color: #369;
+    }
+
+        .navbar .nav-link:hover {
+            color: white;
+        }
+
+    input::placeholder, textarea::placeholder {
+        color: gray;
+    }
+</style>
+
+<div class="bg-gray-100 py-24 sm:py-32">
+    <div class="mx-auto max-w-2xl px-6 lg:max-w-7xl lg:px-8">
+        <h2 class="text-center text-lg font-semibold text-[#38679D]">Profilo Utente</h2>
+        <p class="mx-auto mt-2 max-w-5xl text-center text-4xl font-semibold tracking-tight text-balance text-gray-950 sm:text-5xl">@(User.IsInRole("Admin") ? "Qui troverari info e statistiche sull'utente" : "Qui troverai info e statistiche sui tuoi ordini")</p>
+        <div class="mt-10 grid gap-4 sm:mt-16 lg:grid-cols-3 lg:grid-rows-2">
+            <div class="relative lg:row-span-2">
+                <div class="absolute inset-px max-lg:rounded-t-4xl bg-white lg:rounded-l-4xl"></div>
+                <div class="relative flex h-full flex-col overflow-hidden max-lg:rounded-t-4xl lg:rounded-l-[calc(2rem+1px)]">
+                    <div class="px-8 pt-8 pb-3 sm:px-10 sm:pt-10 sm:pb-0">
+                        <p class="mt-2 text-lg font-medium tracking-tight text-gray-950 max-lg:text-center">Info personali</p>
+                        <p class="mt-2 max-w-lg text-sm/6 text-gray-600 max-lg:text-center">@(User.IsInRole("Admin") ? "Questi sono i dati di fatturazione dell'utente" : "Questi sono i tuoi dati di fatturazione")</p>
+                    </div>
+                    <div class="flex-1 items-center justify-center px-8 max-lg:pt-10 max-lg:pb-12 sm:px-10 lg:pb-2 mt-5">
+                        @if (Model.Azienda)
+                        {
+                            <p class="mt-2 max-w-lg text-base text-gray-600 max-lg:text-center"><b>Rag. Sociale:</b> @Model.RagioneSociale</p>
+                        }
+                        else
+                        {
+                            <p class="mt-2 max-w-lg text-base text-gray-600 max-lg:text-center"><b>Nome:</b> @Model.Nome @Model.Cognome</p>
+                        }
+                        <p class="mt-2 max-w-lg text-base text-gray-600 max-lg:text-center"><b>Indirizzo:</b> @Model.Indirizzo, @Model.CAP, @Model.Città (@Model.Provincia)</p>
+                        @if (Model.Azienda)
+                        {
+                            <p class="mt-2 max-w-lg text-base text-gray-600 max-lg:text-center"><b>P.Iva:</b> @Model.PartitaIVA</p>
+                            <p class="mt-2 max-w-lg text-base text-gray-600 max-lg:text-center"><b>SDI:</b> @Model.SDI</p>
+                        }
+                        else
+                        {
+                            <p class="mt-2 max-w-lg text-base text-gray-600 max-lg:text-center"><b>C.F.:</b> @Model.CodiceFiscale</p>
+                        }
+                        <p class="mt-2 max-w-lg text-base text-gray-600 max-lg:text-center"><b>Telefono:</b> @Model.PhoneNumber</p>
+                        <p class="mt-2 max-w-lg text-base text-gray-600 max-lg:text-center"><b>Email:</b> @Model.Email</p>
+                    </div>
+                    <div class="px-8 pt-8 pb-3 sm:px-10 sm:pt-10 sm:pb-7">
+                        <img src="https://img.icons8.com/?size=150&id=-1hab-8knF-2&format=png&color=000000" class="justify-self-end" alt="Alternate Text" />
+                    </div>
+                </div>
+                <div class="pointer-events-none absolute inset-px max-lg:rounded-t-4xl shadow-sm ring-1 ring-black/5 lg:rounded-l-4xl"></div>
+            </div>
+            <div class="relative">
+                <div class="absolute inset-px rounded-lg bg-white"></div>
+                <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)]">
+                    <div class="px-8 pt-8 sm:px-10 sm:pt-10">
+                        <p class="mt-2 text-lg font-medium tracking-tight text-gray-950 max-lg:text-center">Statistiche</p>
+                        <p class="mt-2 max-w-lg text-sm/6 text-gray-600 max-lg:text-center">@(User.IsInRole("Admin") ? "La media ordini è ogni:" : "La tua media ordini è ogni:")</p>
+                    </div>
+                    <div class="flex flex-1 items-center justify-center px-8 max-lg:pt-10 max-lg:pb-12 sm:px-10 lg:pb-2">
+                        @if (ordiniPartner.Any())
+                        {
+                            if (mediaGiorni > 0)
+                            {
+                                <h3 class="font-bold text-2xl max-lg:text-center">@mediaGiorni giorni</h3>
+                            }
+                            else
+                            {
+                                <h3 class="font-bold text-2xl max-lg:text-center">Primo ordine</h3>
+                            }
+                        }
+                        else
+                        {
+                            <h3 class="font-bold text-3xl max-lg:text-center">@(User.IsInRole("Admin") ? "Non ci sono ancora ordini effettuati." : "Non hai ancora effettuato ordini.")</h3>
+                        }
+                    </div>
+                </div>
+                <div class="pointer-events-none absolute inset-px rounded-lg shadow-sm ring-1 ring-black/5"></div>
+            </div>
+
+            <div class="relative max-lg:row-start-3 lg:col-start-2 lg:row-start-2">
+                <div class="absolute inset-px rounded-lg bg-white"></div>
+                <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] max-lg:rounded-t-[calc(2rem+1px)]">
+                    <div class="px-8 pt-8 sm:px-10 sm:pt-10">
+                        <p class="mt-2 text-lg font-medium tracking-tight text-gray-950 max-lg:text-center">Ultimo ordine effettuato</p>
+                        <p class="mt-2 max-w-lg text-sm/6 text-gray-600 max-lg:text-center">@(User.IsInRole("Admin") ? "L'ultimo ordine risale al giorno:" : "Il tuo ultimo ordine risale al giorno:")</p>
+                    </div>
+                    <div class="flex flex-1 items-center justify-center px-8 max-lg:pt-10 max-lg:pb-12 sm:px-10 lg:pb-2">
+                        @if (ultimoOrdine != null)
+                        {
+                            <div class="text-center">
+                                <h3 class="font-bold text-2xl max-lg:text-center text-[#38679D]">@ultimoOrdine.DataOrdine.ToString("dd/MM/yyyy")</h3>
+                                <p class="text-sm text-gray-600 mt-1">€ @ultimoOrdine.Totale.ToString("N2")</p>
+                            </div>
+                        }
+                        else
+                        {
+                            <h3 class="font-bold text-3xl max-lg:text-center">@(User.IsInRole("Admin") ? "Non ci sono ancora ordini effettuati." : "Non hai ancora effettuato ordini.")</h3>
+                        }
+                    </div>
+                </div>
+                <div class="pointer-events-none absolute inset-px rounded-lg shadow-sm ring-1 ring-black/5"></div>
+            </div>
+            <div class="relative lg:row-span-2">
+                <div class="absolute inset-px rounded-lg bg-white max-lg:rounded-b-4xl lg:rounded-r-4xl"></div>
+                <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] max-lg:rounded-b-[calc(2rem+1px)] lg:rounded-r-[calc(2rem+1px)]">
+                    <div class="px-8 pt-8 pb-3  sm:pt-10 sm:pb-0">
+                        <p class="mt-2 text-lg font-medium tracking-tight text-gray-950 max-lg:text-center">Storico</p>
+                        <p class="mt-2 max-w-lg text-sm/6 text-gray-600 max-lg:text-center">@(User.IsInRole("Admin") ? "La lista degli ordini effettuati." : "La lista degli ordini che hai effettuato.")</p>
+                    </div>
+                    <div class="relative min-h-120 w-full grow p-8 sm:p-10">
+                        @if (Model.Ordine.Any())
+                        {
+                            foreach (var item in Model.Ordine)
+                            {
+                                <div class="group relative flex cursor-pointer after:shadow-lg after:shadow-black">
+                                    <!-- hidden slide -->
+                                    <div class="relative -left-5 top-0 z-10 w-80 rounded-xl bg-blue-200 px-5 py-3 text-base font-semibold leading-7 transition-all duration-700 group-hover:-left-5">
+                                        <div class="flex flex-col gap-4">
+                                            <!-- item 1 -->
+                                            <div class="flex items-center gap-2">
+                                                <i class="fa-solid fa-file-invoice-dollar"></i>
+                                                <p class="text-white opacity-0 delay-200 duration-700 ease-in-out group-hover:opacity-100">@item.Totale</p>
+                                            </div>
+                                            <!-- item 2 -->
+                                            <div class="flex items-center gap-2">
+                                                <i class="fa-solid fa-calendar-days"></i>
+                                                <p class="text-white opacity-0 delay-200 duration-700 ease-in-out group-hover:opacity-100">@item.DataOrdine.ToString("d")</p>
+                                            </div>
+                                            <p>
+                                                <a href="https://tailwindcss.com/docs" class="text-sky-500 opacity-0 hover:text-sky-600">&rarr;</a>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <!-- main -->
+                                    <div class="absolute -right-7 top-0 z-20 flex w-80 flex-col gap-4 self-end rounded-xl rounded-l-2xl border-none bg-[#38679D] px-5 py-3 text-base font-semibold leading-7 transition-all duration-700 group-hover:-right-7 group-hover:w-50 group-hover:rounded-l-lg group-hover:truncate">
+                                        <p class="text-[#fff]">Ordine completato</p>
+                                        <p class="text-[#fff]"></p>
+                                        <p>
+                                            <section x-data="{modalOpen: false}">
+                                                <div class="container mx-auto">
+                                                    <button x-on:click="modalOpen = true"
+                                                            class="px-4 py-1 text-base font-medium text-white rounded-full bg-[#38679D] cursor-pointer">
+                                                        Vedi dettagli &rarr;
+                                                    </button>
+                                                </div>
+                                                <div x-show="modalOpen"
+                                                     x-transition
+                                                     x-cloak
+                                                     class="fixed top-0 left-0 flex items-center justify-center w-full h-full min-h-screen px-4 py-5 bg-gray-800/90 z-[2000]">
+                                                    <div x-on:click.outside="modalOpen = false"
+                                                         class="w-full max-w-[570px] rounded-[20px] bg-white dark:bg-dark-2 py-12 px-8 text-center md:py-[60px] md:px-[70px]">
+                                                        <h3 class="pb-[18px] text-xl font-semibold text-dark dark:text-white sm:text-2xl">
+                                                            Data Ordine: @item.DataOrdine.ToString("dd/MM/yyyy")
+                                                        </h3>
+                                                        <h3 class="pb-[18px] text-xl font-semibold text-dark dark:text-white sm:text-2xl">
+                                                            Importo totale: @item.Totale €
+                                                        </h3>
+                                                        <span class="mx-auto mb-6 inline-block h-1 w-[90px] rounded bg-blue-100"></span>
+                                                        <h3 class="pb-[18px] text-lg font-semibold text-dark dark:text-white sm:text-2xl">
+                                                            Prodotti:
+                                                        </h3>
+                                                        @foreach (var d in item.Dettaglio)
+                                                        {
+                                                            if (d.AbbonamentoId != null)
+                                                            {
+                                                                var abbonamento = prodotti.FirstOrDefault(x => x.Id == d.AbbonamentoId);
+                                                                <p class="mb-2 text-base leading-relaxed text-body-color dark:text-dark-6">
+                                                                    @(d.Quantita)x - @abbonamento.Nome → @d.Prodotto.Nome (@d.Prezzo €)
+                                                                </p>
+                                                            }
+                                                            else
+                                                            {
+                                                                <p class="mb-2 text-base leading-relaxed text-body-color dark:text-dark-6">
+                                                                    @(d.Quantita)x - @d.Prodotto.Nome (@d.Prezzo €)
+                                                                </p>
+                                                            }
+                                                            if (d.Colore != FloreMoria.Enums.Colore.Nessuno)
+                                                            {
+                                                                <span class="text-base block">- Colore dei fiori: @d.Colore</span>
+                                                            }
+                                                            if (d.NotaConsegna != null)
+                                                            {
+                                                                <span class="text-base block">- Nota Consegna: @d.NotaConsegna</span>
+                                                            }
+                                                            if (d.NotaFiori != null)
+                                                            {
+                                                                <span class="text-base block mb-4">- Nota Fiori: @d.NotaFiori</span>
+                                                            }
+                                                            if (item.Dettaglio.Count > 1)
+                                                            {
+                                                                <span class="text-base">- Defunto: @(d.NomeDestinatario) @(d.CognomeDestinatario)</span>
+                                                                <span class="text-base">- Data Nascita: @(d.DataNascita?.ToString("dd/MM/yyyy") ?? "n.c.") - Data Morte: @(d.DataMorte?.ToString("dd/MM/yyyy"))</span>
+                                                                <span class="text-base">- Indirizzo: @(d.Indirizzo)</span>
+                                                            }
+                                                        }
+                                                        @{
+                                                            var dettaglio = item.Dettaglio.FirstOrDefault();
+                                                        }
+
+                                                        @if (item.Dettaglio.Count == 1)
+                                                        {
+                                                            <span class="mx-auto my-6 inline-block h-1 w-[90px] rounded bg-blue-100"></span>
+                                                            <h3 class="pb-[18px] text-lg font-semibold text-dark dark:text-white sm:text-2xl">
+                                                                Destinatario: @(dettaglio?.NomeDestinatario) @(dettaglio?.CognomeDestinatario)
+                                                            </h3>
+                                                            <h3 class="pb-[18px] text-lg font-semibold text-dark dark:text-white sm:text-2xl">
+                                                                Data Nascita: @(dettaglio?.DataNascita?.ToString("dd/MM/yyyy") ?? "n.c.") - Data Morte: @(dettaglio?.DataMorte?.ToString("dd/MM/yyyy"))
+                                                            </h3>
+                                                            <h3 class="pb-[18px] text-lg font-semibold text-dark dark:text-white sm:text-2xl">
+                                                                Indirizzo: @(dettaglio?.Indirizzo)
+                                                            </h3>
+                                                        }
+                                                        <div class="flex flex-wrap -mx-3 mt-4">
+                                                            <div class="w-1/2 px-3">
+                                                                <button x-on:click="modalOpen = false"
+                                                                        class="block w-full p-2 text-base font-medium text-center transition border rounded-md border-stroke text-dark dark:text-white hover:border-[#38679D] hover:bg-[#38679D] hover:text-white">
+                                                                    Chiudi
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </section>
+                                        </p>
+                                    </div>
+                                    <div class="h-16 bg-blue-200 w-80 rounded-xl -left-5 shadow-lg absolute bottom-0"></div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <h3 class="font-bold text-3xl max-lg:text-center">@(User.IsInRole("Admin") ? "Non ci sono ancora ordini effettuati." : "Non hai ancora effettuato ordini.")</h3>
+                        }
+                    </div>
+                </div>
+                <div class="pointer-events-none absolute inset-px rounded-lg shadow-sm ring-1 ring-black/5 max-lg:rounded-b-4xl lg:rounded-r-4xl"></div>
+            </div>
+        </div>
+    </div>
+</div>
